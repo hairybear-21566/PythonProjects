@@ -2,15 +2,67 @@
 #1) green = on, red=yellow=off is repeated
 # red=green=on, yellow=off is missing
 
+#2)
 
-
-
+'''
 def printState():
     print("Red Light is " + redLight)
     print("Yellow Light is "+ yellowLight)
     print("Green Light is "+ greenLight)
 
-    redLight = "on"
-    yellowLight = "off"
-    greenLight = "off"
+redLight = "on"
+yellowLight = "off"
+greenLight = "off"
 printState()
+'''
+
+#3)
+
+#4)
+
+print(type(redLight)) #str
+
+#5)
+'''
+def printState():
+    print("Red Light is " + str(redLight))
+    print("Yellow Light is "+ str(yellowLight))
+    print("Green Light is "+ str(greenLight))
+
+redLight = 1
+yellowLight = 0
+greenLight = 0
+printState()
+'''
+#8)
+
+print(int("3")+5)
+
+#9)
+
+def printState():
+    print("Red Light is " + str(redLight))
+    print("Yellow Light is "+ str(yellowLight))
+    print("Green Light is "+ str(greenLight))
+
+redLight = True
+yellowLight =
+greenLight = "off"
+printState()
+
+
+#10) int, float, complex
+
+#11) 1,2,3
+
+#12) e
+
+#13) Beaut
+
+#14) f,ful, ,ti
+
+#15) Today is Beautiful
+
+#16) True Today is Beautfiul
+
+#17) "You entered " + operand1
