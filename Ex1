@@ -1,0 +1,16 @@
+
+#1) green = on, red=yellow=off is repeated
+# red=green=on, yellow=off is missing
+
+
+
+
+def printState():
+    print("Red Light is " + redLight)
+    print("Yellow Light is "+ yellowLight)
+    print("Green Light is "+ greenLight)
+
+    redLight = "on"
+    yellowLight = "off"
+    greenLight = "off"
+printState()
