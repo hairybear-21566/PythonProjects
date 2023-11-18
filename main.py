@@ -69,7 +69,7 @@ def set_score(n):
 def startNewGame():
     global gameSpawned
     if not gameSpawned:
-        global background1, background2, btn_start_new_game, p1, platform1, platform2, platform3, allPlatforms, score_text
+        global background1, background2, p1, platform1, platform2, platform3, allPlatforms, score_text
 
         clearCanvas()
         background1 = GameBackground(
@@ -350,16 +350,21 @@ def restartGame():
 
 def resetGame():
     # making new elements for the game completely here
-    global backgroundGame, p1, platform1, platform2, platform3, allPlatforms
+    global  p1, platform1, platform2, platform3, allPlatforms,background1,background2
 
     clearCanvas()
 
-    backgroundGame = PhotoImage(
-        file="gameassets/Free-City-Backgrounds-Pixel-Art2Mod.png")
-    # relsize = backgroundGame.width()
+    
+    background1 = GameBackground(
+            0, 0, "gameassets/starry-night.png", "background1", canvas, 1)
 
-    canvas.create_image(0, 0, image=backgroundGame, anchor=NW)
-    # deleteMenuButtons()
+    background2 = GameBackground(
+            1366, 0, "gameassets/starry-night.png", "background2", canvas, 1)
+
+    score_text = Label(root, text="Score: "+str(score))
+    canvas.create_window(width//2, height//2-300,
+                             anchor=CENTER, window=score_text)
+    
 
     playingGameMenuButton()
     p1 = Player(200, 400, 15, canvas)

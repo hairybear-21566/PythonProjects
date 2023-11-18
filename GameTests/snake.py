@@ -156,7 +156,7 @@ def move_snake():
         grow_snake(px1, py1, px2, py2)
 
     if not game_over_flag:
-        window.after(100, move_snake)
+        window.after(10, move_snake)
     else:
         game_over()
 

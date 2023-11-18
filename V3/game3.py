@@ -1,10 +1,12 @@
 ##################### 
 # SCREEN RESOLUTION : 1366 x 768
 #####################
+
 from tkinter import CENTER, Tk, Canvas, Button, RAISED, PhotoImage, NW, Entry, CENTER,Label
 from random import randint
-import game3xClasses as Classes
-import game3xBossKey as Bk
+import V3.game3xClasses as Classes
+import V3.game3xBossKey as Bk
+
 # Creating application window 
 root = Tk()
 width = 1366
@@ -20,21 +22,15 @@ root.config(bg="#444444")
 canvas = Canvas(root, width=width, height=height, bg="black")
 canvas.place(x=(1366-width)//2, y=(820-height)//2)
 
+# misc variable
 cheatCodes = ["double points", "baby steps", "pew pew"] # Cheat Codes
-
-bindedJump = "Up" # global Jump
-
-rankings = [] #  rankings
-
-game_loop_id = None # gameloop ID
-
-pause = False # pause
-
-gameSpawned = False # used to check if game is running
-
-score = 0 # score for current run
-
-bossKeyWindow = None
+bindedJump = "Up"                                       # global Jump
+rankings = []                                           #  rankings
+game_loop_id = None                                     # gameloop ID
+pause = False                                           # pause
+gameSpawned = False                                     # used to check if game is running
+score = 0                                               # score for current run
+bossKeyWindow = None                                    # hold boss key window instance
 
 ############# clear canvas
 def clearCanvas():
@@ -43,12 +39,6 @@ def clearCanvas():
 #############################################
 # Main Menu Functions
 ############################################# 
-def set_bind_jump():
-        # Implement bind jump functionality
-        pass
-
-def get_bind_jump():
-    return bindedJump
 
 #######################
 def startNewGame():
@@ -79,12 +69,9 @@ def startNewGame():
             platform3 = Classes.Platforms(2000,platform2.getPlatformHeight()+int(p1.maxJumpHeight()//2),10,canvas)
         else:
             platform3 = Classes.Platforms(2000,platform2.getPlatformHeight()-int(p1.maxJumpHeight()//2),10,canvas)
-        
-
+    
         allPlatforms = [platform1,platform2, platform3]
-
         gameSpawned=True
-
         gameLoop()
     else:
         resetGame()
@@ -243,16 +230,19 @@ def inGameMenuPause():
     btnPauseCheats = PauseCheats
     btnPauseExit = PauseExit
 
-    btnPauseResumeWindow = canvas.create_window(width//2, height//2-100, anchor=CENTER, window=btnPauseResume)
-    btnPauseCheatsWindow = canvas.create_window(width//2, height//2, anchor=CENTER, window=btnPauseCheats)
-    btnPauseExitWindow= canvas.create_window(width//2, height//2+100, anchor=CENTER, window=btnPauseExit)
+    #btnPauseResumeWindow = canvas.create_window(width//2, height//2-100, anchor=CENTER, window=btnPauseResume)
+    #btnPauseCheatsWindow = canvas.create_window(width//2, height//2, anchor=CENTER, window=btnPauseCheats)
+    #btnPauseExitWindow= canvas.create_window(width//2, height//2+100, anchor=CENTER, window=btnPauseExit)
+    canvas.create_window(width//2, height//2-100, anchor=CENTER, window=btnPauseResume)
+    canvas.create_window(width//2, height//2, anchor=CENTER, window=btnPauseCheats)
+    canvas.create_window(width//2, height//2+100, anchor=CENTER, window=btnPauseExit)
 
     btn_MenuToPause.destroy()
 
 def playingGameMenuButton():
     global btn_MenuToPause,pause
     MenuToPause = Button(root,
-                               text="Menu",
+                                text="Menu",
                                font=("Arial", 12),
                                bg="lightblue",
                                fg="black",
@@ -265,7 +255,7 @@ def playingGameMenuButton():
                                command=inGameMenuPause)
     btn_MenuToPause = MenuToPause
 
-    btn_MenuToPause_window = canvas.create_window(150,50, anchor=CENTER, window=MenuToPause)
+    canvas.create_window(150,50, anchor=CENTER, window=MenuToPause)
     pause = False
 
     pass
@@ -334,14 +324,8 @@ def gameLoop():
             platform.updatePlatform(heightOfLastPlatform = lastPlatForm.getPlatformHeight(), xOfLastPlatform=lastPlatForm.getPlatformX(),maxPlayerJumpHeight=maxJumpHeight)
 
         global game_loop_id
-        
-    else:
-        #p1.resetPosition()
-        #platform1.resetPos(platform1.initialX,platform1.initialY)
-        #platform2.resetPos(1000,platform1.getPlatformHeight()+int(p1.maxJumpHeight()//2))
-        #platform3.resetPos(2000,platform2.getPlatformHeight()+int(p1.maxJumpHeight()//2))
-        pass
-    game_loop_id = root.after(16, gameLoop)
+        game_loop_id = root.after(16, gameLoop)
+    
 
 def restartGame():
     global game_loop_id
@@ -363,12 +347,12 @@ def restartGame():
 
 def resetGame():
     ################ making new elements for the game completely here
-    global backgroundGame, btn_start_new_game,p1, platform1,platform2,platform3, allPlatforms
+    global backgroundGame,p1, platform1,platform2,platform3, allPlatforms
 
     clearCanvas()
 
     backgroundGame = PhotoImage(file="gameassets/Free-City-Backgrounds-Pixel-Art2Mod.png")
-    relsize = backgroundGame.width()
+    #relsize = backgroundGame.width()
 
     canvas.create_image(0, 0, image=backgroundGame, anchor=NW)
         #deleteMenuButtons()
@@ -391,11 +375,9 @@ def resetGame():
 
     allPlatforms = [platform1,platform2, platform3]
 
-
 ### key binding related
 # Function to set the flag when the up key is released
 def key_press(event):
-    
     if event.keysym == bindedJump:
         p1.jump()
     if event.keysym == "b":

@@ -5,7 +5,7 @@ from random import randint
 
 
 class Platforms:
-    width = 900  # Added class attribute for width
+    width = 800  # Added class attribute for width thus the gap betweeen the platforms is 1000px - width in px)
     screen_height = 1366
 
     def __init__(self, x, y, scrollSpeed,GameCanvas,):
@@ -34,7 +34,7 @@ class Platforms:
         self.x-=self.scrollSpeed
 
     def newPlatform(self, prevHeight, xOfLastPlatform, jumpHeight):
-        self.x = xOfLastPlatform + Platforms.width + 100  # Use class attribute width
+        self.x = xOfLastPlatform + 1000  # Use class attribute width
         if randint(1, 2) == 1:
             self.y = min(prevHeight + randint(0, int(jumpHeight // 2)), 700)
         else:
@@ -60,9 +60,6 @@ class Platforms:
 
 
 class Player:
-
-
-    width = 900
 
     def __init__(self,x,y,size,GameCanvas):
         """PROCEDURE, instatiating player square properties
