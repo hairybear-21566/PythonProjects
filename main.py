@@ -2,12 +2,13 @@
 # SCREEN RESOLUTION : 1366 x 768
 #####################
 
-from tkinter import CENTER, Tk, Canvas, Button, RAISED, PhotoImage, NW, Entry, CENTER, Label
+from tkinter import CENTER, Tk, Canvas, Button, RAISED, PhotoImage, NW, Entry, CENTER, Label,StringVar
 from random import randint
 import gameV4xBosskey as Bk
 from gameV4xPlatform import Platforms
 from gameV4xPlayer import Player
 from gameV4xBackgrounds import GameBackground
+from gameV4xSaverStorer import save_Game, read_saves_binary_file
 
 # Creating application window
 root = Tk()
@@ -30,21 +31,22 @@ bindedJump = "Up"                                       # global Jump
 rankings = []                                           # rankings
 game_loop_id = None                                     # gameloop ID
 pause = False                                           # pause
-# used to check if game is running
-gameSpawned = False
+gameSpawned = False                                     # used to check if game is running
 score = 0                                               # score for current run
-# hold boss key window instance
-bossKeyWindow = None
-PlayerName = None
+bossKeyWindow = None                                    # hold boss key window instance
+PlayerName = None                                       # player name entered into the entry field in main menu
+current_Player_saves = []                                 # last global stored saves array from binary file containing player saves
+entry_var = None
+platform1 = None
+platform2 = None
+platform3 = None
+allPlatforms = None
 
 # clear canvas
-
-
 def clearCanvas():
     canvas.delete("all")
+
 # setters and getters settings functions
-
-
 def set_bind_jump():
     # Implement bind jump functionality
     pass
@@ -66,52 +68,95 @@ def set_score(n):
 #######################
 
 
-def startNewGame():
-    global gameSpawned
-    if not gameSpawned:
-        global background1, background2, p1, platform1, platform2, platform3, allPlatforms, score_text
+def spawnEverything():
+    global background1, background2, p1, platform1, platform2, platform3, allPlatforms, score_text
 
-        clearCanvas()
-        background1 = GameBackground(
-            0, 0, "gameassets/starry-night.png", "background1", canvas, 1)
+    clearCanvas()
+    background1 = GameBackground(
+        0, 0, "gameassets/starry-night.png", "background1", canvas, 1)
 
-        background2 = GameBackground(
-            1366, 0, "gameassets/starry-night.png", "background2", canvas, 1)
+    background2 = GameBackground(
+        1366, 0, "gameassets/starry-night.png", "background2", canvas, 1)
 
-        score_text = Label(root, text="Score: "+str(score))
-        canvas.create_window(width//2, height//2-300,
-                             anchor=CENTER, window=score_text)
+    score_text = Label(root, text="Score: "+str(score))
+    canvas.create_window(width//2, height//2-300,
+                         anchor=CENTER, window=score_text)
 
+    playingGameMenuButton()
+    p1 = Player(200, 400, 15, canvas)
 
-        playingGameMenuButton()
-        p1 = Player(200, 400, 15, canvas)
-
-        # creating platforms
-        platform1 = Platforms(0, 500, 10, canvas)
-        if randint(1, 2) == 1:
-            platform2 = Platforms(1000, platform1.getPlatformHeight(
-            )+int(p1.maxJumpHeight()//2), 10, canvas)
-        else:
-            platform2 = Platforms(1000, platform1.getPlatformHeight(
-            )-int(p1.maxJumpHeight()//2), 10, canvas)
-
-        if randint(1, 2) == 1:
-            platform3 = Platforms(2000, platform2.getPlatformHeight(
-            )+int(p1.maxJumpHeight()//2), 10, canvas)
-        else:
-            platform3 = Platforms(2000, platform2.getPlatformHeight(
-            )-int(p1.maxJumpHeight()//2), 10, canvas)
-
-        allPlatforms = [platform1, platform2, platform3]
-        gameSpawned = True
-        gameLoop()
+    # creating platforms
+    platform1 = Platforms(0, 500, 10, canvas)
+    if randint(1, 2) == 1:
+        platform2 = Platforms(1000, platform1.getPlatformHeight(
+        )+int(p1.maxJumpHeight()//2), 10, canvas)
     else:
-        resetGame()
+        platform2 = Platforms(1000, platform1.getPlatformHeight(
+        )-int(p1.maxJumpHeight()//2), 10, canvas)
 
+    if randint(1, 2) == 1:
+        platform3 = Platforms(2000, platform2.getPlatformHeight(
+        )+int(p1.maxJumpHeight()//2), 10, canvas)
+    else:
+        platform3 = Platforms(2000, platform2.getPlatformHeight(
+        )-int(p1.maxJumpHeight()//2), 10, canvas)
+
+    allPlatforms = [platform1, platform2, platform3]
+
+
+def startNewGame():
+    global gameRunning, pause,entry
+    if PlayerName != "Player Name" or PlayerName.strip() == "":
+
+        
+        spawnEverything()
+        gameRunning = True
+        gameLoop()
+        pause = False
+        #entry.bind('<FocusIn>', on_entry_click)
+        #entry.bind('<FocusOut>', on_focus_out)
+            
 
 def loadGame():
-    clearCanvas()
-    print("loading game..")
+    global background1, background2, p1, platform1, platform2, platform3, allPlatforms, score_text, pause, gameRunning
+
+    player_has_load_data = False
+    for p in read_saves_binary_file():
+        if p["player_name"] == PlayerName:
+            player_details_arr = list(p.values())
+            print(player_details_arr)
+
+            player_has_load_data = True
+            break
+
+    if player_details_arr:
+        clearCanvas()
+        background1 = GameBackground(
+            player_details_arr[5][0], player_details_arr[5][1], "gameassets/starry-night.png", "background1", canvas, 1)
+
+        background2 = GameBackground(
+            player_details_arr[6][0], player_details_arr[6][1], "gameassets/starry-night.png", "background2", canvas, 1)
+
+        score_text = Label(root, text="Score: " + str(player_details_arr[1]))
+        canvas.create_window(width // 2, height // 2 - 300,
+                             anchor=CENTER, window=score_text)
+
+        playingGameMenuButton()
+        p1 = Player(player_details_arr[2][0], player_details_arr[2][1], 15, canvas)
+        p1.vel = player_details_arr[3]
+
+        # creating platforms with correct initial x positions
+        platform1 = Platforms(player_details_arr[4][0][0], player_details_arr[4][0][1], 10, canvas)
+        platform2 = Platforms(player_details_arr[4][1][0], player_details_arr[4][1][1], 10, canvas)
+        platform3 = Platforms(player_details_arr[4][2][0], player_details_arr[4][2][1], 10, canvas)
+
+        # Update allPlatforms with the new platform instances
+        allPlatforms = [platform1, platform2, platform3]
+
+        pause = False
+        gameRunning = True
+        gameLoop()
+
 
 
 def leaderboard():
@@ -158,15 +203,67 @@ def settings():
 
 
 def loadMenu():
+    global entry
+    ###################### entry 
+    placeholder = "Player Name"
+
+    def on_entry_change(event):
+        root.after(1,lambda:update_change(event))
+
+    
+    def update_change(event):
+        global PlayerName
+        name = entry.get()
+        PlayerName = name
+        
+        print(name, placeholder)
+
+        found = False
+        for d in current_Player_saves:
+            if d["player_name"] == name:
+                loadGameButton.config(state="normal")
+                startNewGameButton.config(state="normal")
+                found = True
+                break
+        if name == placeholder or name.strip()=="":
+            loadGameButton.config(state="disabled")
+            startNewGameButton.config(state="disabled")
+        elif not found:
+            loadGameButton.config(state="disabled")
+            startNewGameButton.config(state="normal")
+    
     entry = Entry(root, width=20)
+    entry.insert(0, placeholder)
     entry_window = canvas.create_window(
         width//2, height//2-200, anchor=CENTER, window=entry)
+    # Bind the <Key> event to the entry field
+    entry.bind('<Key>', on_entry_change)
+    def on_entry_click(event):
+        if entry.get() == placeholder:
+            entry.delete(0, "end")
+            entry.config(fg='black')
+
+    def on_focus_out(event):
+        if entry.get() == '':
+            entry.insert(0, placeholder)
+            entry.config(fg='grey')
+
+    entry.bind('<FocusIn>', on_entry_click)
+    entry.bind('<FocusOut>', on_focus_out)
+    
+    #canvas.tag_unbind(entry_window, '<FocusIn>')
+    #canvas.tag_unbind(entry_window, '<FocusOut>')
+    ####################
+
+    current_Player_saves = read_saves_binary_file()
+
+
 
     startNewGameButton = Button(root, text="New Game", font=("Arial", 12), bg="lightblue",
-                                fg="black", bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=startNewGame)
+                                fg="black", bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=startNewGame,state = "disabled")
 
     loadGameButton = Button(root, text="Load Game", font=("Arial", 12), bg="lightblue",
-                            fg="black", bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=loadGame)
+                            fg="black", bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=loadGame, state = "disabled")
 
     leaderboardButton = Button(root, text="Leaderboard", font=("Arial", 12), bg="lightblue",
                                fg="black", bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=leaderboard)
@@ -193,44 +290,14 @@ def inGameMenuPause():
 
     pause = True
 
-    PauseResume = Button(root,
-                         text="resume",
-                         font=("Arial", 12),
-                         bg="lightblue",
-                         fg="black",
-                         bd=3,
-                         relief=RAISED,
-                         padx=10,
-                         pady=5,
-                         width=16,
-                         height=2,
-                         command=resumeGame)
+    PauseResume = Button(root, text="resume", font=("Arial", 12), bg="lightblue", fg="black",
+                         bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=resumeGame)
 
-    PauseCheats = Button(root,
-                         text="cheats",
-                         font=("Arial", 12),
-                         bg="lightblue",
-                         fg="black",
-                         bd=3,
-                         relief=RAISED,
-                         padx=10,
-                         pady=5,
-                         width=15,
-                         height=2,
-                         command=cheatCodeEntry)
+    PauseCheats = Button(root, text="cheats", font=("Arial", 12), bg="lightblue", fg="black",
+                         bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=cheatCodeEntry)
 
-    PauseExit = Button(root,
-                       text="Save and Exit",
-                       font=("Arial", 12),
-                       bg="lightblue",
-                       fg="black",
-                       bd=3,
-                       relief=RAISED,
-                       padx=10,
-                       pady=5,
-                       width=15,
-                       height=2,
-                       command=inGameExit)
+    PauseExit = Button(root, text="Save and Exit", font=("Arial", 12), bg="lightblue", fg="black",
+                       bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=inGameExit)
 
     btnPauseResume = PauseResume
     btnPauseCheats = PauseCheats
@@ -256,8 +323,19 @@ def playingGameMenuButton():
     pass
 
 
+
+
 def inGameExit():
+    global pause, gameRunning, game_loop_id
+    
+    save_Game(PlayerName, score, (p1.x, p1.y), p1.vel,[[platform.getPlatformX(
+        ), platform.getPlatformHeight()] for platform in allPlatforms], [background1.x,background1.y],[background2.x,background2.y])
+    
+    set_score(0)
     clearCanvas()
+    root.after_cancel(game_loop_id)
+    gameRunning = False  # Stop the game loop
+    pause = True
     loadMenu()
 
 
@@ -268,6 +346,7 @@ def resumeGame():
     for i in range(len(arr)):
         arr[i].destroy()
     playingGameMenuButton()
+    gameLoop()
 
 
 def cheatCodeEntry():
@@ -308,8 +387,8 @@ def cheatCodeEntry():
 
 
 def gameLoop():
-    global pause, game_loop_id, score
-    if not pause:
+    global pause, game_loop_id, gameRunning
+    if gameRunning and not pause:
         set_score(score+1)
         p1.updatePlayer(allPlatforms, restartGame)
         background1.update_background()
@@ -322,15 +401,15 @@ def gameLoop():
         for platform in allPlatforms:
             platform.updatePlatform(heightOfLastPlatform=lastPlatForm.getPlatformHeight(
             ), xOfLastPlatform=lastPlatForm.getPlatformX(), maxPlayerJumpHeight=maxJumpHeight)
-    game_loop_id = root.after(20, gameLoop)
+        game_loop_id = root.after(20, gameLoop)
 
 
 def restartGame():
-    global game_loop_id
+    global game_loop_id, platform1,platform2,platform3
     # only reset the position of the elements on the canvas
     if game_loop_id:
         p1.resetPosition()
-        platform1.resetPos(platform1.initialX, platform1.initialY)
+        platform1.resetPos(0, 500) # platform1.initalX replaced with 0
         if randint(1, 2) == 1:
             platform2.resetPos(
                 1000, platform1.getPlatformHeight()-int(p1.maxJumpHeight()//2))
@@ -348,63 +427,26 @@ def restartGame():
         # next we rest the positions of p1 and the platforms
 
 
-def resetGame():
-    # making new elements for the game completely here
-    global  p1, platform1, platform2, platform3, allPlatforms,background1,background2
-
-    clearCanvas()
-
-    
-    background1 = GameBackground(
-            0, 0, "gameassets/starry-night.png", "background1", canvas, 1)
-
-    background2 = GameBackground(
-            1366, 0, "gameassets/starry-night.png", "background2", canvas, 1)
-
-    score_text = Label(root, text="Score: "+str(score))
-    canvas.create_window(width//2, height//2-300,
-                             anchor=CENTER, window=score_text)
-    
-
-    playingGameMenuButton()
-    p1 = Player(200, 400, 15, canvas)
-    p1.vel = 0
-
-    # creating platforms
-    platform1 = Platforms(0, 500, 10, canvas)
-    if randint(1, 2) == 1:
-        platform2 = Platforms(1000, platform1.getPlatformHeight(
-        )+int(p1.maxJumpHeight()//2), 10, canvas)
-    else:
-        platform2 = Platforms(1000, platform1.getPlatformHeight(
-        )-int(p1.maxJumpHeight()//2), 10, canvas)
-
-    if randint(1, 2) == 1:
-        platform3 = Platforms(2000, platform2.getPlatformHeight(
-        )+int(p1.maxJumpHeight()//2), 10, canvas)
-    else:
-        platform3 = Platforms(2000, platform2.getPlatformHeight(
-        )-int(p1.maxJumpHeight()//2), 10, canvas)
-
-    allPlatforms = [platform1, platform2, platform3]
-
 # key binding related
 # Function to set the flag when the up key is released
 
 
 def key_press(event):
-    if event.keysym == bindedJump:
-        p1.jump()
-    if event.keysym == "b":
-
-        Bk.bossKeyCreate()
+    try:
+        if event.keysym == bindedJump:
+            p1.jump()
+        if event.keysym == "b":
+            Bk.bossKeyCreate()
+    except:pass
 
 # Function to clear the flag when the up key is released
 
 
 def key_release(event):
-    if event.keysym == bindedJump:
-        p1.stopJump()
+    try:
+        if event.keysym == bindedJump:
+            p1.stopJump()
+    except:pass
 
 
 # Bind the key press and release events
