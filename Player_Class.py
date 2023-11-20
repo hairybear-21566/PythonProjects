@@ -113,7 +113,7 @@ class Player:
         Returns:
             int:max height of jump in pixels roughly, used for platform generation
         """
-        return int((self.maxConseqFrames-1)*self.jumpForce + (self.jumpForce**2)//(2*self.gravity))
+        return 150
 
     def resetPosition(self):
         self.canvas.coords(self.playerInt,self.initialX,self.initialY,self.initialX+self.size,self.initialY+self.size)

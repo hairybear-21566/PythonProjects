@@ -1,9 +1,10 @@
 import pickle
 
 
-def save_Game(player_name: str, score: int, player_position: list[int], player_velocity: int, 
-              platform_positions: list[list[int]], background_1_positions: list[int], background_2_positions: list[int]):
-    
+def save_Game(player_name: str, score: int, player_position: list[int], player_velocity: int,
+              platform_positions: list[list[int]], background_1_positions: list[int], background_2_positions: list[int], 
+              background_upper1_positions: list[int], background_upper2_positions: list[int]):
+
     save_data = {
         'player_name': player_name,
         'score': score,
@@ -11,7 +12,9 @@ def save_Game(player_name: str, score: int, player_position: list[int], player_v
         'player_velocity': player_velocity,
         'platform_positions': platform_positions,
         'background_1_positions': background_1_positions,
-        'background_2_positions': background_2_positions
+        'background_2_positions': background_2_positions,
+        'background_upper1_positions':background_upper1_positions,
+        'background_upper2_positions':background_upper2_positions
     }
 
     # Load existing saves or create an empty list
@@ -26,20 +29,25 @@ def save_Game(player_name: str, score: int, player_position: list[int], player_v
             existing_save_index = d
             break
 
+    max_saves = 5
+
     # Update existing save or append a new one
     if existing_save_index is not None:
         saves[existing_save_index] = save_data
     else:
         saves.append(save_data)
 
+    if len(saves) >= 6:
+        saves = saves[1:6]
+
     # Save the updated list back to the file
-    with open('player_saves.dat', 'wb') as file:
+    with open('Player_saves.dat', 'wb') as file:
         pickle.dump(saves, file)
 
 
 def read_saves_binary_file() -> list:
     try:
-        with open('player_saves.dat', 'rb') as file:
+        with open('Player_saves.dat', 'rb') as file:
             return pickle.load(file)
     except (FileNotFoundError, EOFError):
         # Return an empty list if the file doesn't exist or is empty

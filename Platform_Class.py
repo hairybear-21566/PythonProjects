@@ -31,9 +31,9 @@ class Platforms:
     def newPlatform(self, prevHeight, xOfLastPlatform, jumpHeight):
         self.x = xOfLastPlatform + 1000  # Use class attribute width
         if randint(1, 2) == 1:
-            self.y = min(prevHeight + randint(0, int(jumpHeight // 2)), 700)
+            self.y = min(prevHeight + randint(0,int(150//1.7)), 700)
         else:
-            self.y = max(prevHeight - randint(0, int(jumpHeight // 2)), 400)
+            self.y = max(prevHeight - randint(0,int(150//1.7)), 400)
         # Update the platform coordinates using class attribute width
         self.GameCanvas.coords(self.platformInt, self.x, self.y, self.x + Platforms.width, Platforms.screen_height)
 
