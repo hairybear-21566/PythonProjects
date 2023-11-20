@@ -3,7 +3,7 @@ import pickle
 
 def save_Game(player_name: str, score: int, player_position: list[int], player_velocity: int,
               platform_positions: list[list[int]], background_1_positions: list[int], background_2_positions: list[int], 
-              background_upper1_positions: list[int], background_upper2_positions: list[int]):
+              background_upper1_positions: list[int], background_upper2_positions: list[int],platform_scroll_speed:int):
 
     save_data = {
         'player_name': player_name,
@@ -14,7 +14,8 @@ def save_Game(player_name: str, score: int, player_position: list[int], player_v
         'background_1_positions': background_1_positions,
         'background_2_positions': background_2_positions,
         'background_upper1_positions':background_upper1_positions,
-        'background_upper2_positions':background_upper2_positions
+        'background_upper2_positions':background_upper2_positions,
+        'platform_scroll_speed':platform_scroll_speed
     }
 
     # Load existing saves or create an empty list
@@ -43,6 +44,7 @@ def save_Game(player_name: str, score: int, player_position: list[int], player_v
     # Save the updated list back to the file
     with open('Player_saves.dat', 'wb') as file:
         pickle.dump(saves, file)
+        #print(saves)
 
 
 def read_saves_binary_file() -> list:

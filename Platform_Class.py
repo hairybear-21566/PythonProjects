@@ -24,6 +24,9 @@ class Platforms:
         else:
             self.scrollPlatform()
 
+    def changeScrollSpeed(self,start,score):
+        self.scrollSpeed = min(score//200 + start,15)
+
     def scrollPlatform(self):
         self.GameCanvas.move(self.platformInt,-self.scrollSpeed,0)
         self.x-=self.scrollSpeed

@@ -59,10 +59,14 @@ class Player:
         elif self.y + self.size == self.floor:
             self.consecJumpFrames=0
         elif self.y+self.size>700:
-            gameRestart()   
+            gameRestart()  
+            return False 
         # if player below the floor
         else:
-            gameRestart()
+            gameRestart() 
+            return False
+
+        return True
             
     def movePlayer(self,dx,dy):
         self.canvas.move(self.playerInt,dx,dy)
@@ -116,6 +120,8 @@ class Player:
         return 150
 
     def resetPosition(self):
-        self.canvas.coords(self.playerInt,self.initialX,self.initialY,self.initialX+self.size,self.initialY+self.size)
-        self.x = self.initialX
-        self.y = self.initialY
+
+        self.canvas.coords(self.playerInt,200,400,200+self.size,400+self.size)
+        self.x = 200
+        self.y = 400
+        self.vel = 0
