@@ -61,11 +61,10 @@ allPlatforms = None
 def auto_save():
     global pause, gameRunning, game_loop_id
     try:
-    
 
         save_Game(PlayerName, score, (p1.x, p1.y), p1.vel, [[platform.getPlatformX(
-    ), platform.getPlatformHeight()] for platform in allPlatforms], [background1.x, background1.y], [background2.x, background2.y],
-    [background_upper1.x,background_upper1.y],[background_upper2.x,background_upper2.y],platform1.scrollSpeed)
+        ), platform.getPlatformHeight()] for platform in allPlatforms], [background1.x, background1.y], [background2.x, background2.y],
+            [background_upper1.x, background_upper1.y], [background_upper2.x, background_upper2.y], platform1.scrollSpeed)
 
         set_score(0)
         clearCanvas()
@@ -77,145 +76,102 @@ def auto_save():
     except:
         root.destroy()
 
+
 def clearCanvas():
     canvas.delete("all")
 
 # setters and getters settings functions
+
 
 def set_score(n):
     global score
     score = n
     score_text.config(text="Score: "+str(n))
 
+
 def platform_offset():
     global p1
-    return randint(0,int(150//1.7))
-    #return 150
-    
+    return randint(0, int(150//1.7))
+    # return 150
+
 #############################################
 # Main Menu Functions
 #############################################
-
-#######################
-
-
-def spawnEverything():
-    global background1, background2, p1, platform1, platform2, platform3, allPlatforms, score_text, gameSpawned, background_upper1, background_upper2
-
-    gameSpawned = True
-    clearCanvas()
-    background_upper1 = GameBackground(
-        0, 0, "gameassets/back-clouds.png", "background_upper1", canvas, 2)
-    background_upper2 = GameBackground(
-        1366, 0, "gameassets/back-clouds.png", "background_upper2", canvas, 2)
-    background1 = GameBackground(
-        0, 0, "gameassets/starry-night.png", "background1", canvas, 1)
-
-    background2 = GameBackground(
-        1366, 0, "gameassets/starry-night.png", "background2", canvas, 1)
-
-    score_text = Label(root,bg="black", fg="white", font=("Nimbus Mono PS", 12), text="Score: "+str(score))
-    canvas.create_window(width//2, height//2-300,
-                         anchor=CENTER, window=score_text)
-
-    playingGameMenuButton()
-    p1 = Player(200, 400, player_size, canvas)
-
-    # creating platforms
-    platform1 = Platforms(0, 500, starting_scroll_speed, canvas)
-    if randint(1, 2) == 1:
-        platform2 = Platforms(1000, min(700,platform1.getPlatformHeight(
-        )+int(platform_offset())), starting_scroll_speed, canvas)
-    else:
-        platform2 = Platforms(1000, max(platform1.getPlatformHeight(
-        )-int(platform_offset()),400), starting_scroll_speed, canvas)
-
-    if randint(1, 2) == 1:
-        platform3 = Platforms(2000, min(700,platform2.getPlatformHeight(
-        )+int(platform_offset())), starting_scroll_speed, canvas)
-    else:
-        platform3 = Platforms(2000, max(400,platform2.getPlatformHeight(
-        )-int(platform_offset())), starting_scroll_speed, canvas)
-
-    allPlatforms = [platform1, platform2, platform3]
 
 
 def startNewGame():
     root.focus_set()
     global gameRunning, pause, entry
     if PlayerName != "Player Name" or PlayerName.strip() == "":
-
-        spawnEverything()
+        loadGame(True)
         gameRunning = True
-        gameLoop()
         pause = False
-    #entry.bind('<FocusIn>', on_entry_click)
-    #entry.bind('<FocusOut>', on_focus_out)
 
 
-def loadGame():
-    global background1, score,background2, p1, platform1, platform2, platform3, allPlatforms, score_text, pause, gameRunning, background_upper1, background_upper2,gameSpawned
+def loadGame(new):
+    global background1, score, background2, p1, platform1, platform2, platform3, allPlatforms, score_text, pause, gameRunning, background_upper1, background_upper2, gameSpawned
     root.focus_set()
     player_details_arr = False
-    
+
     for p in read_saves_binary_file():
         if p["player_name"] == PlayerName:
             player_details_arr = list(p.values())
             # print(player_details_arr)
             break
-   
-    '''
-    if player_details_arr==False:
-        n2 = min(500 + int(platform_offset()),700) if randint(1,2) == 1 else max(500 - int(platform_offset()),400)
-        n3 = min(n2 + int(platform_offset()),700) if randint(1,2) == 1 else max(n2 - int(platform_offset()),400)
-        player_details_arr = [
-        PlayerName,
-        0,
-        [200,400],
-        0,
-        [
-            [0,500],
-            [1000,n2],
-            [2000,n3],
 
-        ],
-        [0,0],
-        [1366,0],
-        [0,0],
-        [1366,0],
-        starting_scroll_speed
+    if player_details_arr == False:
+        n2 = min(500 + int(platform_offset()), 700) if randint(1,
+                                                               2) == 1 else max(500 - int(platform_offset()), 400)
+        n3 = min(n2 + int(platform_offset()), 700) if randint(1,
+                                                              2) == 1 else max(n2 - int(platform_offset()), 400)
+        player_details_arr = [
+            PlayerName,
+            0,
+            [200, 400],
+            0,
+            [
+                [0, 500],
+                [1000, n2],
+                [2000, n3],
+
+            ],
+            [0, 0],
+            [1366, 0],
+            [0, 0],
+            [1366, 0],
+            starting_scroll_speed
         ]
-        
-    '''
+
     clearCanvas()
-    gameSpawned=True
+    gameSpawned = True
     background_upper1 = GameBackground(
-    player_details_arr[7][0], player_details_arr[7][1], "gameassets/back-clouds.png", "background_upper1", canvas, 2)
+        player_details_arr[7][0], player_details_arr[7][1], "gameassets/back-clouds.png", "background_upper1", canvas, 2)
     background_upper2 = GameBackground(
-    player_details_arr[8][0], player_details_arr[8][1], "gameassets/back-clouds.png", "background_upper2", canvas, 2)
+        player_details_arr[8][0], player_details_arr[8][1], "gameassets/back-clouds.png", "background_upper2", canvas, 2)
 
     background1 = GameBackground(
         player_details_arr[5][0], player_details_arr[5][1], "gameassets/starry-night.png", "background1", canvas, 1)
 
     background2 = GameBackground(
         player_details_arr[6][0], player_details_arr[6][1], "gameassets/starry-night.png", "background2", canvas, 1)
-        
+
     score = player_details_arr[1]
 
-    score_text = Label(root, bg="black", fg="white", font=("Nimbus Mono PS", 12),text="Score: " + str(score))
+    score_text = Label(root, bg="black", fg="white", font=(
+        "Nimbus Mono PS", 12), text="Score: " + str(score))
     canvas.create_window(width // 2, height // 2 - 300,
-                             anchor=CENTER, window=score_text)
+                         anchor=CENTER, window=score_text)
 
     playingGameMenuButton()
     p1 = Player(player_details_arr[2][0],
-                    player_details_arr[2][1], player_size, canvas)
+                player_details_arr[2][1], player_size, canvas)
     p1.vel = player_details_arr[3]
 
     # creating platforms with correct initial x positions
     platform1 = Platforms(
         player_details_arr[4][0][0], player_details_arr[4][0][1], player_details_arr[9], canvas)
     platform2 = Platforms(
-            player_details_arr[4][1][0], player_details_arr[4][1][1], player_details_arr[9], canvas)
+        player_details_arr[4][1][0], player_details_arr[4][1][1], player_details_arr[9], canvas)
     platform3 = Platforms(
         player_details_arr[4][2][0], player_details_arr[4][2][1], player_details_arr[9], canvas)
 
@@ -272,10 +228,10 @@ def settings():
         clearCanvas()
         loadMenu()
 
-    def set_bind_jump(new_jump_bind:str):
+    def set_bind_jump(new_jump_bind: str):
         global bindedJump
         print(new_jump_bind)
-        if new_jump_bind=="space":
+        if new_jump_bind == "space":
             bindedJump = new_jump_bind
             bind_jump_button2.config(state="disabled")
             bind_jump_button.config(state="normal")
@@ -283,7 +239,7 @@ def settings():
             bindedJump = new_jump_bind
             bind_jump_button2.config(state="normal")
             bind_jump_button.config(state="disabled")
-    
+
         pass
 
     def get_bind_jump():
@@ -296,18 +252,16 @@ def settings():
         width // 2, height // 2-100, anchor=CENTER, window=binded_jump_label)
 
     bind_jump_button = Button(root, text="Up Arrow", font=("Nimbus Mono PS", 12), bg="black", fg="white", bd=3,
-                              relief=RAISED, padx=10, pady=5, width=12, height=2, command=lambda : set_bind_jump("Up"))
-    bind_jump_button_window = canvas.create_window(width // 2 - 150, height // 2 -20, anchor=CENTER,
+                              relief=RAISED, padx=10, pady=5, width=12, height=2, command=lambda: set_bind_jump("Up"))
+    bind_jump_button_window = canvas.create_window(width // 2 - 150, height // 2 - 20, anchor=CENTER,
                                                    window=bind_jump_button)
-    
-    bind_jump_button2 = Button(root, text="space", font=("Nimbus Mono PS", 12), bg="black", fg="white", bd=3,
-                              relief=RAISED, padx=10, pady=5, width=12, height=2, command=lambda : set_bind_jump("space"))
-    bind_jump_button2_window = canvas.create_window(width // 2 + 150, height // 2 -20 , anchor=CENTER,
-                                                   window=bind_jump_button2)
-    
-    set_bind_jump(bindedJump)
 
-    
+    bind_jump_button2 = Button(root, text="space", font=("Nimbus Mono PS", 12), bg="black", fg="white", bd=3,
+                               relief=RAISED, padx=10, pady=5, width=12, height=2, command=lambda: set_bind_jump("space"))
+    bind_jump_button2_window = canvas.create_window(width // 2 + 150, height // 2 - 20, anchor=CENTER,
+                                                    window=bind_jump_button2)
+
+    set_bind_jump(bindedJump)
 
     back_button = Button(root, text="Back", font=("Nimbus Mono PS", 12), bg="black", fg="white", bd=3,
                          relief=RAISED, padx=10, pady=5, width=10, height=2, command=goBack)
@@ -324,7 +278,6 @@ def loadMenu():
         width // 2, 100, anchor=CENTER, window=label_title)
     # entry
     placeholder = "Player Name"
-    
 
     def on_entry_change(event, running):
         if running:
@@ -384,7 +337,7 @@ def loadMenu():
                                 fg="white", bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=startNewGame, state="disabled")
 
     loadGameButton = Button(root, text="Load Game", font=("Nimbus Mono PS", 12), bg="black",
-                            fg="white", bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=loadGame, state="disabled")
+                            fg="white", bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=lambda: loadGame(False), state="disabled")
 
     leaderboardButton = Button(root, text="Leaderboard", font=("Nimbus Mono PS", 12), bg="black",
                                fg="white", bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=leaderboard)
@@ -439,7 +392,8 @@ def playingGameMenuButton():
     MenuToPause = Button(root, text="Menu", font=("Nimbus Mono PS", 12), bg="black", fg="white",
                          bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=inGameMenuPause)
     btn_MenuToPause = MenuToPause
-    in_game_menu_id=canvas.create_window(150, 50, anchor=CENTER, window=MenuToPause)
+    in_game_menu_id = canvas.create_window(
+        150, 50, anchor=CENTER, window=MenuToPause)
     pause = False
     pass
 
@@ -449,7 +403,7 @@ def inGameExit():
 
     save_Game(PlayerName, score, (p1.x, p1.y), p1.vel, [[platform.getPlatformX(
     ), platform.getPlatformHeight()] for platform in allPlatforms], [background1.x, background1.y], [background2.x, background2.y],
-    [background_upper1.x,background_upper1.y],[background_upper2.x,background_upper2.y],platform1.scrollSpeed)
+        [background_upper1.x, background_upper1.y], [background_upper2.x, background_upper2.y], platform1.scrollSpeed)
 
     set_score(0)
     clearCanvas()
@@ -475,43 +429,38 @@ def cheatCodeEntry():
         arr[i].destroy()
 
     def set_triple_points(choice):
-
         if choice:
             textButton1.config(state="disabled")
             textButton2.config(state="normal")
-            cheat_codes_actived["triple_points"]=True
+            cheat_codes_actived["triple_points"] = True
         else:
             textButton2.config(state="disabled")
             textButton1.config(state="normal")
-            cheat_codes_actived["triple_points"]=False
+            cheat_codes_actived["triple_points"] = False
 
-        pass
 
     def goBack():
-        #textEntry.destroy()
         textButton1.destroy()
         textButton2.destroy()
         canvas.delete(textButtonWindow1)
         canvas.delete(textButtonWindow2)
-        #resultLabel.destroy()
         canvas.delete(backButtonWindow)
         backButton.destroy()
         inGameMenuPause()
-        
-    
 
-    # Button to retrieve text
-    textButton1 = Button(root, bg="black", fg="white", font=("Nimbus Mono PS", 12), text="Activate triple points", command=lambda:set_triple_points(True))
+    textButton1 = Button(root, bg="black", fg="white", font=(
+        "Nimbus Mono PS", 12), text="Activate triple points", command=lambda: set_triple_points(True))
     textButtonWindow1 = canvas.create_window(
         width//2-150, height//2-100, anchor=CENTER, window=textButton1)
-    textButton2 = Button(root, bg="black", fg="white", font=("Nimbus Mono PS", 12),text="Deactivate triple points", command=lambda:set_triple_points(False))
+    textButton2 = Button(root, bg="black", fg="white", font=(
+        "Nimbus Mono PS", 12), text="Deactivate triple points", command=lambda: set_triple_points(False))
     textButtonWindow2 = canvas.create_window(
         width//2+150, height//2-100, anchor=CENTER, window=textButton2)
-    
+
     set_triple_points(cheat_codes_actived["triple_points"])
 
-    # Back button
-    backButton = Button(root, bg="black", fg="white", font=("Nimbus Mono PS", 12),text="Back", command=goBack)
+    backButton = Button(root, bg="black", fg="white", font=(
+        "Nimbus Mono PS", 12), text="Back", command=goBack)
     backButtonWindow = canvas.create_window(
         width//2, height//2+100, anchor=CENTER, window=backButton)
 
@@ -519,7 +468,7 @@ def cheatCodeEntry():
 def gameLoop():
     global pause, game_loop_id, gameRunning
     if gameRunning and not pause:
-    
+
         set_score(score+(3 if cheat_codes_actived["triple_points"] else 1))
         again = p1.updatePlayer(allPlatforms, restartGame)
         background1.update_background()
@@ -534,10 +483,9 @@ def gameLoop():
         for platform in allPlatforms:
             platform.updatePlatform(heightOfLastPlatform=lastPlatForm.getPlatformHeight(
             ), xOfLastPlatform=lastPlatForm.getPlatformX(), maxPlayerJumpHeight=maxJumpHeight)
-            platform.changeScrollSpeed(starting_scroll_speed,score)
+            platform.changeScrollSpeed(starting_scroll_speed, score)
         if again:
             game_loop_id = root.after(20, gameLoop)
-        
 
 
 def restartGame():
@@ -545,45 +493,43 @@ def restartGame():
         global countdown_label_id, count
         count = PhotoImage(file="gameassets/count-down"+str(n)+".png")
         countdown_label_id = canvas.create_image(width//2, height//2,
-                                                  anchor=CENTER, image=count)
+                                                 anchor=CENTER, image=count)
         root.after(900, delete_countdown_label)
 
     def delete_countdown_label():
         canvas.delete(countdown_label_id)
 
-    global game_loop_id, platform1, platform2, platform3,countdown_label_id,in_game_menu_id, gameRunning
+    global game_loop_id, platform1, platform2, platform3, countdown_label_id, in_game_menu_id, gameRunning
     # only reset the position of the elements on the canvas
-    
+
     if game_loop_id:
-        
+
         gameRunning = True
         update_Leaderboard(PlayerName, score)
-        
-        p1.resetPosition()
-        platform1.resetPos(0, 500) 
-        if randint(1, 2) == 1:
-            platform2.resetPos(
-                1000, max(platform1.getPlatformHeight()-int(platform_offset()),400))
-        else:
-            platform2.resetPos(
-                1000, min(700,platform1.getPlatformHeight()+int(platform_offset())))
-        if randint(1, 2) == 1:
-            platform3.resetPos(
-                2000, max(400,platform2.getPlatformHeight()-int(platform_offset())))
-        else:
-            platform3.resetPos(
-                2000, min(700,platform2.getPlatformHeight()+int(platform_offset())))
-        set_score(0)
 
+        p1.resetPosition()
+        platform1.resetPos(0, 500)
+        if randint(1, 2) == 1:
+            platform2.resetPos(
+                1000, max(platform1.getPlatformHeight()-int(platform_offset()), 400))
+        else:
+            platform2.resetPos(
+                1000, min(700, platform1.getPlatformHeight()+int(platform_offset())))
+        if randint(1, 2) == 1:
+            platform3.resetPos(
+                2000, max(400, platform2.getPlatformHeight()-int(platform_offset())))
+        else:
+            platform3.resetPos(
+                2000, min(700, platform2.getPlatformHeight()+int(platform_offset())))
+        set_score(0)
 
         canvas.delete(in_game_menu_id)
         count_down_display(3)
 
-        root.after(1000,lambda : count_down_display(2))
-        root.after(2000,lambda: count_down_display(1))
+        root.after(1000, lambda: count_down_display(2))
+        root.after(2000, lambda: count_down_display(1))
 
-
-        root.after(3000,lambda:(gameLoop(),playingGameMenuButton()))
+        root.after(3000, lambda: (gameLoop(), playingGameMenuButton()))
 
         # next we rest the positions of p1 and the platforms
 
@@ -601,11 +547,12 @@ def key_press(event):
         pass
     if event.keysym == "b" and root.focus_get() != entry:
         Bk.bossKeyCreate()
-    
+
     if event.keysym == "t":
-        cheat_codes_actived["triple_points"]=not cheat_codes_actived["triple_points"]
+        cheat_codes_actived["triple_points"] = not cheat_codes_actived["triple_points"]
 
 # Function to clear the flag when the up key is released
+
 
 def key_release(event):
     try:
@@ -618,6 +565,6 @@ def key_release(event):
 # Bind the key press and release events
 root.bind("<KeyPress>", key_press)
 root.bind("<KeyRelease>", key_release)
-root.protocol("WM_DELETE_WINDOW",auto_save)
+root.protocol("WM_DELETE_WINDOW", auto_save)
 loadMenu()
 root.mainloop()

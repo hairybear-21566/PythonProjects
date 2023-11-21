@@ -18,7 +18,7 @@ class Platforms:
         self.platformInt = GameCanvas.create_rectangle(x, y, x + Platforms.width, Platforms.screen_height, fill="black")
         self.GameCanvas = GameCanvas
 
-    def updatePlatform(self, heightOfLastPlatform = 0, xOfLastPlatform=0, maxPlayerJumpHeight = 0):
+    def updatePlatform(self, heightOfLastPlatform:int = 0, xOfLastPlatform:int =0, maxPlayerJumpHeight:int = 0):
         if self.x+self.width<0:
             self.newPlatform(heightOfLastPlatform, xOfLastPlatform, maxPlayerJumpHeight)
         else:
