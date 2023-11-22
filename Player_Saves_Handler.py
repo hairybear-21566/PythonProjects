@@ -3,7 +3,8 @@ import pickle
 
 def save_Game(player_name: str, score: int, player_position: list[int], player_velocity: int,
               platform_positions: list[list[int]], background_1_positions: list[int], background_2_positions: list[int], 
-              background_upper1_positions: list[int], background_upper2_positions: list[int],platform_scroll_speed:int):
+              background_upper1_positions: list[int], background_upper2_positions: list[int],platform_scroll_speed:int,
+              birds_array):
 
     save_data = {
         'player_name': player_name,
@@ -15,7 +16,8 @@ def save_Game(player_name: str, score: int, player_position: list[int], player_v
         'background_2_positions': background_2_positions,
         'background_upper1_positions':background_upper1_positions,
         'background_upper2_positions':background_upper2_positions,
-        'platform_scroll_speed':platform_scroll_speed
+        'platform_scroll_speed':platform_scroll_speed,
+        'birds_array':birds_array
     }
 
     # Load existing saves or create an empty list

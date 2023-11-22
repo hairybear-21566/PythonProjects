@@ -1,3 +1,5 @@
+I have almost done my game but I just have 1 major bug. when I die from the player colliding with a platform, the game restarts, there is a count down THEN the game starts as normal, at regular speed. BUT when I die from the player colliding with a bird/crow, the game will then restart BUT the game will NOT freeze until the countdown finished AND the game plays at double speed. Now i figure it has something to do with a unintentional gameloop being called but the issue may be something else, could you have a look at my code to find the bug?:
+
 #####################
 # SCREEN RESOLUTION : 1366 x 768
 #####################
@@ -498,10 +500,8 @@ def gameLoop():
             background_upper1.update_background()
             maxJumpHeight = p1.maxJumpHeight()
             for b in birds_array:
-                again2=b.update_crow([p1.x,p1.y,p1.x+p1.size,p1.y+p1.size],restartGame)
-                if not again2:
-                    break
-                
+                temp=b.update_crow([p1.x,p1.y,p1.x+p1.size,p1.y+p1.size],restartGame)
+                again = temp or again
             lastPlatForm = platform1
             for p in allPlatforms:
                 if p.getPlatformX() > lastPlatForm.getPlatformX():
@@ -510,9 +510,10 @@ def gameLoop():
                 platform.updatePlatform(heightOfLastPlatform=lastPlatForm.getPlatformHeight(
             ), xOfLastPlatform=lastPlatForm.getPlatformX(), maxPlayerJumpHeight=maxJumpHeight)
                 platform.changeScrollSpeed(starting_scroll_speed, score)
-        
-        if again and again2:
-            game_loop_id = root.after(20, gameLoop)
+        if not again:
+            print(again)
+        if again:
+            game_loop_id = root.after(16, gameLoop)
 
 
 def restartGame():

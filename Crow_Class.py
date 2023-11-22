@@ -1,13 +1,5 @@
-from tkinter import CENTER, Tk, Canvas, Button, RAISED, PhotoImage, NW, Entry, CENTER, Label
 
-#from testing2 import Crow
-from random import randint
-
-# testing looping
-from tkinter import NW,PhotoImage, Canvas
-from random import randint
-
-from tkinter import NW,PhotoImage, Canvas
+from tkinter import Canvas, PhotoImage,NW 
 from random import randint
 
 class Crow:
@@ -38,12 +30,15 @@ class Crow:
         self.frame = 1
         self.count = 0 
 
-    def update_crow(self):
+    def update_crow(self,player,restart_game):
         
         self.frame_update()
         self.move()
         self.animate()
-        pass
+        if self.collision(player,self.hitbox):
+            restart_game()
+            return False
+        return True
         
 
     def animate(self):
@@ -90,109 +85,3 @@ class Crow:
         self.count = self.count + 1 if self.count!=5 else 1
         if self.count == 5:
             self.frame = self.frame + 1 if self.frame!=6 else 1
-        
-
-
-    
-class Thing:
-    def __init__(self,canvas: Canvas):
-        self.x = 500
-        self.y = 100
-        self.canvas = canvas
-        self.obj=canvas.create_rectangle(self.x,self.y,self.x+15,self.y+15, fill = "blue")
-
-    def move(self,movement):
-        if movement[0]==True:
-            self.y-=5
-        if movement[1]==True:
-            self.x-=5
-        if movement[2]==True:
-            self.y+=5
-        if movement[3]==True:
-            self.x+=5
-
-        self.update_player()
-    def update_player(self):
-        self.canvas.coords(self.obj,self.x,self.y,self.x+15,self.y+15)
-    
-
-
-
-
-root = Tk()
-width = 1366
-height = 768
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
-x1 = (screen_width - width) // 2
-y1 = (screen_height - height) // 2
-root.geometry(f"{width}x{height}+{x1}+{y1}")
-root.config(bg="#444444")
-
-# Canvas creation
-canvas = Canvas(root, width=width, height=height, bg="black")
-canvas.place(x=(1366-width)//2, y=(820-height)//2)
-
-bird = Crow(100,100,2,f"GameTests/crow-size-32/crow-size-32-{str(1)}.png", "bird 1", canvas)
-ting = Thing(canvas)
-
-frame = 1
-count = 0 
-#             w      a      s      d
-movement = [False, False, False, False]
-
-def gameloop():
-    global count, frame
-
-    count = count + 1 if count!=5 else 1
-    if count == 5:
-        frame = frame + 1 if frame!=6 else 1
-    ting.move(movement)
-    bird.update_crow()
-    
-    
-    if not bird.collision([ting.x,ting.y,ting.x+15,ting.y+15],bird.hitbox):
-        #pass
-        root.after(20,gameloop)
-    else:
-        root.destroy()
-    
-
-def key_press(event):
-    
-    if event.keysym == "w":
-        movement[0]=True
-    if event.keysym == "a":
-        movement[1]=True
-    if event.keysym == "s":
-        movement[2]=True
-    if event.keysym == "d":
-        movement[3]=True
-    
-
-
-        
-
-   
-
-# Function to clear the flag when the up key is released
-
-
-def key_release(event):
-    if event.keysym == "w":
-        movement[0]=False
-    if event.keysym == "a":
-        movement[1]=False
-    if event.keysym == "s":
-        movement[2]=False
-    if event.keysym == "d":
-        movement[3]=False
-    
-    
-
-# Bind the key press and release events
-root.bind("<KeyPress>", key_press)
-root.bind("<KeyRelease>", key_release)
-
-gameloop()
-root.mainloop()
