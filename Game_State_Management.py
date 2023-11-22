@@ -1,18 +1,3 @@
-#####################
-# SCREEN RESOLUTION : 1366 x 768
-#####################
-
-from tkinter import CENTER, Tk, Canvas, Button, RAISED, PhotoImage, NW, Entry, CENTER, Label
-from random import randint
-import Bosskey_Handler as Bk
-from Platform_Class import Platforms
-from Player_Class import Player
-from Background_Class import GameBackground
-from Player_Saves_Handler import save_Game, read_saves_binary_file
-from Leaderboard_Handler import update_Leaderboard, read_leaderboard_binary_file
-from Crow_Class import Crow
-from typing import Union # Union[int,float] <- allows for multiple type hints
-
 class Game_State_Manger:
 # Creating application window
 
@@ -582,5 +567,3 @@ class Game_State_Manger:
         except:
             pass
 
-Game=Game_State_Manger()
-    

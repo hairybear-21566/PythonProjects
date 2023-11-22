@@ -20,10 +20,10 @@ def bossKeyCreate(rootBoss: Tk = None) -> Tk:
         bossKeyDestroy(rootBoss)
     return rootBoss
 
-def bossKeyDestroy(rootBoss: Tk):
+def bossKeyDestroy(rootBoss: Tk)->None:
     rootBoss.destroy()
 
-def key_press(event):
+def key_press(event)->None:
     global root2
     if root2!=None:
         root2.destroy()

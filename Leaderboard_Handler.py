@@ -1,7 +1,7 @@
 import pickle
 
 
-def update_Leaderboard(player_name: str, score: int):
+def update_Leaderboard(player_name: str, score: int)->None:
     
     run_data = {
         'player_name': player_name,

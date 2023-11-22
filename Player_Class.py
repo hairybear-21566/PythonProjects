@@ -27,7 +27,7 @@ class Player:
         self.jumpAvailable = False
         self.floor = self.y
         
-    def updatePlayer(self,platforms,gameRestart):
+    def updatePlayer(self,platforms:list,gameRestart):
         self.setNewFloor(platforms)
         self.setOnGround()
 ## checking if gravity should kick in yet
@@ -68,12 +68,12 @@ class Player:
 
         return True
             
-    def movePlayer(self,dx,dy):
+    def movePlayer(self,dx:int,dy:int):
         self.canvas.move(self.playerInt,dx,dy)
         self.y += dy
         self.x += dx
 
-    def setNewFloor(self,platforms):
+    def setNewFloor(self,platforms:list):
         value = False
         for p in platforms:
             if p.getPlatformX()<=self.x+self.size and p.getPlatformX()+p.width>=self.x+self.size:

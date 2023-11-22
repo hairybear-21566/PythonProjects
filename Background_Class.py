@@ -1,6 +1,6 @@
 from tkinter import PhotoImage,NW,Canvas
 class GameBackground:
-    def __init__(self, x:int, y:int, filepath:str, tag:str, canvas:Canvas,scrollspeed:int):
+    def __init__(self, x:int, y:int, filepath:str, tag:str, canvas:Canvas,scrollspeed:int)->None:
         self.initialX = x
         self.initialY = y
         self.x = x 
@@ -16,7 +16,7 @@ class GameBackground:
         
         
 
-    def update_background(self):
+    def update_background(self)->None:
         if self.x - self.scrollspeed <= -1366:
             self.x =  1366-(self.scrollspeed-(1366+self.x))
             self.canvas.coords(self.image_object,self.x,0)

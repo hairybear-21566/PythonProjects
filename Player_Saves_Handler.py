@@ -4,7 +4,7 @@ import pickle
 def save_Game(player_name: str, score: int, player_position: list[int], player_velocity: int,
               platform_positions: list[list[int]], background_1_positions: list[int], background_2_positions: list[int], 
               background_upper1_positions: list[int], background_upper2_positions: list[int],platform_scroll_speed:int,
-              birds_array):
+              birds_array:list):
 
     save_data = {
         'player_name': player_name,

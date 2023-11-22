@@ -1,5 +1,5 @@
 from random import randint
-
+from tkinter import Canvas
 # restartGame IN updatPlayer
 # allPlatforms IN updatePlayer->setNewFloor
 
@@ -8,7 +8,7 @@ class Platforms:
     width = 850  # Added class attribute for width thus the gap betweeen the platforms is 1000px - width in px)
     screen_height = 1366
 
-    def __init__(self, x, y, scrollSpeed,GameCanvas,):
+    def __init__(self, x:int, y:int, scrollSpeed:int,GameCanvas:Canvas):
         self.initialX = x
         self.initialY = y
         self.x = x
@@ -20,18 +20,18 @@ class Platforms:
 
     def updatePlatform(self, heightOfLastPlatform:int = 0, xOfLastPlatform:int =0, maxPlayerJumpHeight:int = 0):
         if self.x+self.width<0:
-            self.newPlatform(heightOfLastPlatform, xOfLastPlatform, maxPlayerJumpHeight)
+            self.newPlatform(heightOfLastPlatform, xOfLastPlatform)
         else:
             self.scrollPlatform()
 
-    def changeScrollSpeed(self,start,score):
+    def changeScrollSpeed(self,start:int,score:int):
         self.scrollSpeed = min(score//200 + start,15)
 
     def scrollPlatform(self):
         self.GameCanvas.move(self.platformInt,-self.scrollSpeed,0)
         self.x-=self.scrollSpeed
 
-    def newPlatform(self, prevHeight, xOfLastPlatform, jumpHeight):
+    def newPlatform(self, prevHeight:int, xOfLastPlatform:int):
         self.x = xOfLastPlatform + 1000  # Use class attribute width
         if randint(1, 2) == 1:
             self.y = min(prevHeight + randint(0,int(150//1.7)), 700)
@@ -50,7 +50,7 @@ class Platforms:
     def resetScrollSpeed(self):
         self.scrollSpeed = 10
 
-    def resetPos(self,x,y):
+    def resetPos(self,x:int,y:int):
         self.GameCanvas.coords(self.platformInt,x,y,x+self.width,768)
         self.x = x
         self.y = y
