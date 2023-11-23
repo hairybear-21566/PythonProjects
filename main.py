@@ -64,7 +64,7 @@ class Game_State_Manger:
         self.platform2 = None
         self.platform3 = None
         self.allPlatforms = None
-        self.num_of_birds = 3
+        self.num_of_birds = 5
         self.bird_speed = 4
         self.start_bird_pos = 2000
         self.birds_array = None
@@ -589,7 +589,7 @@ class Game_State_Manger:
             self.super_jump_keys["o"] = False
             self.cheat_codes_actived["super_jump"] = False
             try:
-                self.p1.jumpForce = -17
+                self.p1.jumpForce = -20
             except:
                 pass
 
@@ -597,7 +597,7 @@ class Game_State_Manger:
             self.super_jump_keys["p"] = False
             self.cheat_codes_actived["super_jump"] = False
             try:
-                self.p1.jumpForce = -17
+                self.p1.jumpForce = -20
             except:
                 pass
 

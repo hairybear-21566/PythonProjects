@@ -24,7 +24,7 @@ class Player:
         self.consecJumpFrames = 0
         self.maxConseqFrames=5
         self.gravity = 1.5
-        self.jumpForce = -17
+        self.jumpForce = -20
         self.onGround = True
         self.holdingJump=False
         self.jumpAvailable = False
