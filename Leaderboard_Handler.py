@@ -23,7 +23,7 @@ def update_Leaderboard(player_name: str, score: int) -> None:
         pickle.dump(saves, file)
 
 
-def read_leaderboard_binary_file() -> list[{str, int}]:
+def read_leaderboard_binary_file() -> list:
     try:
         with open('Leaderboard.dat', 'rb') as file:
             return pickle.load(file)

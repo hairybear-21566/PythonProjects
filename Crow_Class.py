@@ -55,7 +55,7 @@ class Crow:
     def get_min_height(self) -> int:
         return randint(400, 625)
 
-    def collision(self, arr1: list[int], arr2: list[int]) -> bool:
+    def collision(self, arr1: list, arr2: list) -> bool:
         # arr[1], arr[2] : [x,y,x+w,y+h]
         if arr1[0] < arr2[2] and arr1[2] > arr2[0] and arr1[1] < arr2[3] and arr1[3] > arr2[1]:
             return True
