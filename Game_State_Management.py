@@ -7,10 +7,11 @@ from Background_Class import GameBackground
 from Player_Saves_Handler import save_Game, read_saves_binary_file
 from Leaderboard_Handler import update_Leaderboard, read_leaderboard_binary_file
 from Crow_Class import Crow
-from typing import Union # Union[int,float] <- allows for multiple type hints
+from typing import Union  # Union[int,float] <- allows for multiple type hints
+
 
 class Game_State_Manger:
-# Creating application window
+    # Creating application window
 
     def __init__(self):
         self.root = Tk()
@@ -24,7 +25,8 @@ class Game_State_Manger:
         self.root.config(bg="#444444")
 
         # Canvas creation
-        self.canvas = Canvas(self.root, width=self.width, height=self.height, bg="black")
+        self.canvas = Canvas(self.root, width=self.width,
+                             height=self.height, bg="black")
         self.canvas.place(x=(1366-self.width)//2, y=(820-self.height)//2)
 
         # misc variable
@@ -39,7 +41,8 @@ class Game_State_Manger:
         self.gameSpawned = False
         self.gameRunning = True
         self.entry_focused = False
-        self.score = 0                                               # score for current run
+        # score for current run
+        self.score = 0
         self.starting_scroll_speed = 6
         self.player_size = 25
 
@@ -54,9 +57,9 @@ class Game_State_Manger:
         self.platform2 = None
         self.platform3 = None
         self.allPlatforms = None
-        self.num_of_birds=3
-        self.bird_speed=4
-        self.start_bird_pos=2000
+        self.num_of_birds = 3
+        self.bird_speed = 4
+        self.start_bird_pos = 2000
         self.birds_array = None
 
         self.root.bind("<KeyPress>", self.key_press)
@@ -69,17 +72,19 @@ class Game_State_Manger:
     # misc
     #############################
 
-    def auto_save(self)->None:
-        
+    def auto_save(self) -> None:
+
         try:
 
             save_Game(self.PlayerName, self.score, (self.p1.x, self.p1.y), self.p1.vel,
-                       [[platform.getPlatformX(), platform.getPlatformHeight()] for platform in self.allPlatforms],
-                        [self.background1.x, self.background1.y],
-                        [self.background2.x, self.background2.y],
-                        [self.background_upper1.x, self.background_upper1.y], [self.background_upper2.x, self.background_upper2.y], 
-                        self.platform1.scrollSpeed,
-                        [[self.birds_array[i].image_x,self.birds_array[i].image_y,self.birds_array[i].scroll_speed,self.birds_array[i].tag] for i in range(len(self.birds_array))])
+                      [[platform.getPlatformX(), platform.getPlatformHeight()]
+                       for platform in self.allPlatforms],
+                      [self.background1.x, self.background1.y],
+                      [self.background2.x, self.background2.y],
+                      [self.background_upper1.x, self.background_upper1.y], [
+                          self.background_upper2.x, self.background_upper2.y],
+                      self.platform1.scrollSpeed,
+                      [[self.birds_array[i].image_x, self.birds_array[i].image_y, self.birds_array[i].scroll_speed, self.birds_array[i].tag] for i in range(len(self.birds_array))])
 
             self.set_score(0)
             self.clearCanvas()
@@ -91,18 +96,15 @@ class Game_State_Manger:
         except:
             self.root.destroy()
 
-
-    def clearCanvas(self)->None:
+    def clearCanvas(self) -> None:
         self.canvas.delete("all")
 
+    def set_score(self, n: int) -> None:
 
-    def set_score(self,n:int)->None:
-        
         self.score = n
         self.score_text.config(text="Score: "+str(n))
 
-
-    def platform_offset(self)->None:
+    def platform_offset(self) -> None:
         return randint(0, int(150//1.7))
         # return 150
 
@@ -110,17 +112,16 @@ class Game_State_Manger:
     # main menu functions
     ##########################
 
-    def startNewGame(self)->None:
+    def startNewGame(self) -> None:
         self.root.focus_set()
-        
+
         if self.PlayerName != "Player Name" or self.PlayerName.strip() == "":
             self.loadGame(True)
             self.gameRunning = True
             self.pause = False
 
+    def loadGame(self, new: bool) -> None:
 
-    def loadGame(self,new:bool)->None:
-        
         self.root.focus_set()
         player_details_arr = False
         for p in read_saves_binary_file():
@@ -129,11 +130,11 @@ class Game_State_Manger:
                 # print(player_details_arr)
                 break
 
-        if player_details_arr == False or new==True:
+        if player_details_arr == False or new == True:
             n2 = min(500 + int(self.platform_offset()), 700) if randint(1,
                                                                 2) == 1 else max(500 - int(self.platform_offset()), 400)
             n3 = min(n2 + int(self.platform_offset()), 700) if randint(1,
-                                                                2) == 1 else max(n2 - int(self.platform_offset()), 400)
+                                                                       2) == 1 else max(n2 - int(self.platform_offset()), 400)
             player_details_arr = [
                 self.PlayerName,
                 0,
@@ -149,7 +150,8 @@ class Game_State_Manger:
                 [1366, 0],
                 [0, 0],
                 [1366, 0],
-                self.starting_scroll_speed,[[self.start_bird_pos+1000*i,randint(400,600),self.bird_speed,"bird "+str(i)]for i in range(self.num_of_birds)] 
+                self.starting_scroll_speed, [[self.start_bird_pos+1000*i, randint(
+                    400, 600), self.bird_speed, "bird "+str(i)]for i in range(self.num_of_birds)]
                 # x:int,y:int,scrollSpeed:int,filepath:str,tag_id:str,canvas:Canvas
                 # what we save: x, y, scrollSpeed,tag
             ]
@@ -172,11 +174,11 @@ class Game_State_Manger:
         self.score_text = Label(self.root, bg="black", fg="white", font=(
             "Nimbus Mono PS", 12), text="Score: " + str(self.score))
         self.canvas.create_window(self.width // 2, self.height // 2 - 300,
-                            anchor=CENTER, window=self.score_text)
+                                  anchor=CENTER, window=self.score_text)
 
         self.playingGameMenuButton()
         self.p1 = Player(player_details_arr[2][0],
-                    player_details_arr[2][1], self.player_size, self.canvas)
+                         player_details_arr[2][1], self.player_size, self.canvas)
         self.p1.vel = player_details_arr[3]
 
         # creating platforms with correct initial x positions
@@ -193,21 +195,19 @@ class Game_State_Manger:
         self.birds_array = [Crow(player_details_arr[10][i][0],
                             player_details_arr[10][i][1],
                             player_details_arr[10][i][2],
-                            f"gameassets/crows-64/crow-size-64-{str(1)}.png", 
-                            player_details_arr[10][i][3],
-                            self.canvas) for i in range(len(player_details_arr[10]))]
-
+                            f"gameassets/crows-64/crow-size-64-{str(1)}.png",
+                                 player_details_arr[10][i][3],
+                                 self.canvas) for i in range(len(player_details_arr[10]))]
 
         self.pause = False
         self.gameRunning = True
         self.gameLoop()
 
-
-    def leaderboard(self)->None:
+    def leaderboard(self) -> None:
         self.root.focus_set()
         self.clearCanvas()
 
-        def goBack()->None:
+        def goBack() -> None:
             self.clearCanvas()
             self.loadMenu()
 
@@ -234,22 +234,21 @@ class Game_State_Manger:
             i += 1
 
         back_button = Button(self.root, text="Back", font=("Nimbus Mono PS", 12), bg="black", fg="white",
-                            bd=3, relief=RAISED, padx=10, pady=5, width=10, height=2, command=goBack)
+                             bd=3, relief=RAISED, padx=10, pady=5, width=10, height=2, command=goBack)
         self.canvas.create_window(self.width // 2, self.height // 2 + 300,
-                            anchor=CENTER, window=back_button)
-
+                                  anchor=CENTER, window=back_button)
 
     def settings(self):
-        
+
         self.root.focus_set()
         self.clearCanvas()
 
-        def goBack()->None:
+        def goBack() -> None:
             self.clearCanvas()
             self.loadMenu()
 
-        def set_bind_jump(new_jump_bind: str)->None:
-            
+        def set_bind_jump(new_jump_bind: str) -> None:
+
             if new_jump_bind == "space":
                 self.bindedJump = new_jump_bind
                 bind_jump_button2.config(state="disabled")
@@ -265,38 +264,36 @@ class Game_State_Manger:
             self.width // 2, self.height // 2-100, anchor=CENTER, window=binded_jump_label)
 
         bind_jump_button = Button(self.root, text="Up Arrow", font=("Nimbus Mono PS", 12), bg="black", fg="white", bd=3,
-                                relief=RAISED, padx=10, pady=5, width=12, height=2, command=lambda: set_bind_jump("Up"))
+                                  relief=RAISED, padx=10, pady=5, width=12, height=2, command=lambda: set_bind_jump("Up"))
         bind_jump_button_window = self.canvas.create_window(self.width // 2 - 150, self.height // 2 - 20, anchor=CENTER,
-                                                    window=bind_jump_button)
+                                                            window=bind_jump_button)
 
         bind_jump_button2 = Button(self.root, text="space", font=("Nimbus Mono PS", 12), bg="black", fg="white", bd=3,
-                                relief=RAISED, padx=10, pady=5, width=12, height=2, command=lambda: set_bind_jump("space"))
+                                   relief=RAISED, padx=10, pady=5, width=12, height=2, command=lambda: set_bind_jump("space"))
         bind_jump_button2_window = self.canvas.create_window(self.width // 2 + 150, self.height // 2 - 20, anchor=CENTER,
-                                                        window=bind_jump_button2)
+                                                             window=bind_jump_button2)
 
         set_bind_jump(self.bindedJump)
 
         back_button = Button(self.root, text="Back", font=("Nimbus Mono PS", 12), bg="black", fg="white", bd=3,
-                            relief=RAISED, padx=10, pady=5, width=10, height=2, command=goBack)
+                             relief=RAISED, padx=10, pady=5, width=10, height=2, command=goBack)
         back_button_window = self.canvas.create_window(
             self.width // 2, self.height // 2 + 100, anchor=CENTER, window=back_button)
 
-
     def loadMenu(self):
-        
 
         label_title = Label(self.root, text="NIGHT CRAWLER", font=(
             "C059", 40), bg="black", fg="dark red")
         label_title_window = self.canvas.create_window(
             self.width // 2, 100, anchor=CENTER, window=label_title)
-        
+
         placeholder = "Player Name"
 
-        def on_entry_change(event, running:bool)->None:
+        def on_entry_change(event, running: bool) -> None:
             if running:
                 self.root.after(1, update_change)
 
-        def update_change()->None:
+        def update_change() -> None:
             name = self.entry.get()
             self.PlayerName = name
             found = False
@@ -322,16 +319,15 @@ class Game_State_Manger:
         self.entry.bind('<Key>', lambda x: on_entry_change(
             x, self.gameRunning or self.gameSpawned))
 
-        def on_entry_click(event:object)->None:
-            
+        def on_entry_click(event: object) -> None:
+
             self.entry_focused = True
             if self.entry.get() == placeholder:
                 self.entry.delete(0, "end")
                 self.entry.config(fg='black')
 
-        def on_focus_out(event:object)->None:
-            
-            
+        def on_focus_out(event: object) -> None:
+
             self.entry_focused = False
             if self.entry.get() == '':
                 self.entry.insert(0, placeholder)
@@ -349,70 +345,68 @@ class Game_State_Manger:
                                 fg="white", bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=lambda: self.loadGame(False), state="disabled")
 
         leaderboardButton = Button(self.root, text="Leaderboard", font=("Nimbus Mono PS", 12), bg="black",
-                                fg="white", bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.leaderboard)
+                                   fg="white", bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.leaderboard)
 
         settingsButton = Button(self.root, text="Settings", font=("Nimbus Mono PS", 12), bg="black",
                                 fg="white", bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.settings)
 
         self.canvas.create_window(self.width//2, self.height//2-100,
-                            anchor=CENTER, window=startNewGameButton)
+                                  anchor=CENTER, window=startNewGameButton)
         self.canvas.create_window(self.width//2, self.height//2,
-                            anchor=CENTER, window=loadGameButton)
+                                  anchor=CENTER, window=loadGameButton)
         self.canvas.create_window(self.width//2, self.height//2+100,
-                            anchor=CENTER, window=leaderboardButton)
+                                  anchor=CENTER, window=leaderboardButton)
         self.canvas.create_window(self.width//2, self.height//2+200,
-                            anchor=CENTER, window=settingsButton)
+                                  anchor=CENTER, window=settingsButton)
 
     #############################################
     # In Game Mangement Functions
     #############################################
 
-
-    def inGameMenuPause(self)->None:
+    def inGameMenuPause(self) -> None:
         self.pause = True
         PauseResume = Button(self.root, text="resume", font=("Nimbus Mono PS", 12), bg="black", fg="white",
-                            bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=self.resumeGame)
+                             bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=self.resumeGame)
 
         PauseCheats = Button(self.root, text="cheats", font=("Nimbus Mono PS", 12), bg="black", fg="white",
-                            bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.cheatCodeEntry)
+                             bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.cheatCodeEntry)
 
         PauseExit = Button(self.root, text="Save and Exit", font=("Nimbus Mono PS", 12), bg="black", fg="white",
-                        bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.inGameExit)
+                           bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.inGameExit)
 
         self.btnPauseResume = PauseResume
         self.btnPauseCheats = PauseCheats
         self.btnPauseExit = PauseExit
 
         self.canvas.create_window(self.width//2, self.height//2-100,
-                            anchor=CENTER, window=self.btnPauseResume)
+                                  anchor=CENTER, window=self.btnPauseResume)
         self.canvas.create_window(self.width//2, self.height//2,
-                            anchor=CENTER, window=self.btnPauseCheats)
+                                  anchor=CENTER, window=self.btnPauseCheats)
         self.canvas.create_window(self.width//2, self.height//2+100,
-                            anchor=CENTER, window=self.btnPauseExit)
+                                  anchor=CENTER, window=self.btnPauseExit)
 
         self.btn_MenuToPause.destroy()
 
+    def playingGameMenuButton(self) -> None:
 
-    def playingGameMenuButton(self)->None:
-        
         self.MenuToPause = Button(self.root, text="Menu", font=("Nimbus Mono PS", 12), bg="black", fg="white",
-                            bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.inGameMenuPause)
+                                  bd=3, relief=RAISED, padx=10, pady=5, width=15, height=2, command=self.inGameMenuPause)
         self.btn_MenuToPause = self.MenuToPause
         self.in_game_menu_id = self.canvas.create_window(
             150, 50, anchor=CENTER, window=self.MenuToPause)
         self.pause = False
 
+    def inGameExit(self) -> None:
 
-    def inGameExit(self)->None:
-        
         save_Game(self.PlayerName, self.score, (self.p1.x, self.p1.y), self.p1.vel,
-                       [[platform.getPlatformX(), platform.getPlatformHeight()] for platform in self.allPlatforms],
-                        [self.background1.x, self.background1.y],
-                        [self.background2.x, self.background2.y],
-                        [self.background_upper1.x, self.background_upper1.y], [self.background_upper2.x, self.background_upper2.y], 
-                        self.platform1.scrollSpeed,
-                        [[self.birds_array[i].image_x,self.birds_array[i].image_y,self.birds_array[i].scroll_speed,self.birds_array[i].tag] for i in range(len(self.birds_array))])
-
+                  [[platform.getPlatformX(), platform.getPlatformHeight()]
+                   for platform in self.allPlatforms],
+                  [self.background1.x, self.background1.y],
+                  [self.background2.x, self.background2.y],
+                  [self.background_upper1.x, self.background_upper1.y], [
+                      self.background_upper2.x, self.background_upper2.y],
+                  self.platform1.scrollSpeed,
+                  [[self.birds_array[i].image_x, self.birds_array[i].image_y, self.birds_array[i].scroll_speed, self.birds_array[i].tag] for i in range(len(self.birds_array))])
 
         self.set_score(0)
         self.clearCanvas()
@@ -421,9 +415,8 @@ class Game_State_Manger:
         self.pause = True
         self.loadMenu()
 
+    def resumeGame(self) -> None:
 
-    def resumeGame(self)->None:
-        
         self.pause = False
         arr = [self.btnPauseResume,  self.btnPauseCheats, self.btnPauseExit]
         for i in range(len(arr)):
@@ -431,13 +424,12 @@ class Game_State_Manger:
         self.playingGameMenuButton()
         self.gameLoop()
 
-
-    def cheatCodeEntry(self)->None:
+    def cheatCodeEntry(self) -> None:
         arr = [self.btnPauseResume,  self.btnPauseCheats, self.btnPauseExit]
         for i in range(len(arr)):
             arr[i].destroy()
 
-        def set_triple_points(choice:bool)->None:
+        def set_triple_points(choice: bool) -> None:
             if choice:
                 textButton1.config(state="disabled")
                 textButton2.config(state="normal")
@@ -447,8 +439,7 @@ class Game_State_Manger:
                 textButton1.config(state="normal")
                 self.cheat_codes_actived["triple_points"] = False
 
-
-        def goBack()->None:
+        def goBack() -> None:
             textButton1.destroy()
             textButton2.destroy()
             self.canvas.delete(textButtonWindow1)
@@ -477,10 +468,11 @@ class Game_State_Manger:
     # game cycle management
     ##########################
 
-    def gameLoop(self)->None:
-       
+    def gameLoop(self) -> None:
+
         if self.gameRunning and not self.pause:
-            self.set_score(self.score+(3 if self.cheat_codes_actived["triple_points"] else 1))
+            self.set_score(
+                self.score+(3 if self.cheat_codes_actived["triple_points"] else 1))
             again = self.p1.updatePlayer(self.allPlatforms, self.restartGame)
             if again:
                 self.background1.update_background()
@@ -489,29 +481,32 @@ class Game_State_Manger:
                 self.background_upper1.update_background()
                 maxJumpHeight = self.p1.maxJumpHeight()
                 for b in self.birds_array:
-                    again2=b.update_crow([self.p1.x,self.p1.y,self.p1.x+self.p1.size,self.p1.y+self.p1.size],self.restartGame)
+                    again2 = b.update_crow(
+                        [self.p1.x, self.p1.y, self.p1.x+self.p1.size, self.p1.y+self.p1.size], self.restartGame)
                     if not again2:
                         break
-    
+
                 lastPlatForm = self.platform1
                 for p in self.allPlatforms:
                     if p.getPlatformX() > lastPlatForm.getPlatformX():
                         lastPlatForm = p
                 for platform in self.allPlatforms:
                     platform.updatePlatform(heightOfLastPlatform=lastPlatForm.getPlatformHeight(
-                ), xOfLastPlatform=lastPlatForm.getPlatformX(), maxPlayerJumpHeight=maxJumpHeight)
-                    platform.changeScrollSpeed(self.starting_scroll_speed, self.score)
+                    ), xOfLastPlatform=lastPlatForm.getPlatformX(), maxPlayerJumpHeight=maxJumpHeight)
+                    platform.changeScrollSpeed(
+                        self.starting_scroll_speed, self.score)
             if again and again2:
                 self.game_loop_id = self.root.after(20, self.gameLoop)
 
-
-    def restartGame(self)->None:
-        def count_down_display(n:int)->None:
+    def restartGame(self) -> None:
+        def count_down_display(n: int) -> None:
             self.count = PhotoImage(file="gameassets/count-down"+str(n)+".png")
             countdown_label_id = self.canvas.create_image(self.width//2, self.height//2,
-                                                    anchor=CENTER, image=self.count)
-            self.root.after(800, lambda:delete_countdown_label(countdown_label_id))
-        def delete_countdown_label(id:int)->None:
+                                                          anchor=CENTER, image=self.count)
+            self.root.after(
+                800, lambda: delete_countdown_label(countdown_label_id))
+
+        def delete_countdown_label(id: int) -> None:
             self.canvas.delete(id)
 
         if self.game_loop_id:
@@ -529,15 +524,15 @@ class Game_State_Manger:
                     1000, min(700, self.platform1.getPlatformHeight()+int(self.platform_offset())))
             if randint(1, 2) == 1:
                 self.platform3.resetPos(
-                    2000, max(400,self. platform2.getPlatformHeight()-int(self.platform_offset())))
+                    2000, max(400, self. platform2.getPlatformHeight()-int(self.platform_offset())))
             else:
                 self.platform3.resetPos(
                     2000, min(700, self.platform2.getPlatformHeight()+int(self.platform_offset())))
-                
+
             self.set_score(0)
 
             for bird in range(len(self.birds_array)):
-                self.birds_array[bird].reset_pos(bird,self.start_bird_pos)
+                self.birds_array[bird].reset_pos(bird, self.start_bird_pos)
 
             self.canvas.delete(self.in_game_menu_id)
             count_down_display(3)
@@ -545,13 +540,14 @@ class Game_State_Manger:
             self.root.after(1000, lambda: count_down_display(2))
             self.root.after(2000, lambda: count_down_display(1))
 
-            self.root.after(3000, lambda: (self.gameLoop(), self.playingGameMenuButton()))
+            self.root.after(3000, lambda: (
+                self.gameLoop(), self.playingGameMenuButton()))
 
     #########################
     # key event management
     #########################
-    def key_press(self,event)->None:
-        
+    def key_press(self, event) -> None:
+
         try:
             if event.keysym == self.bindedJump:
                 self.p1.jump()
@@ -564,7 +560,7 @@ class Game_State_Manger:
         if event.keysym == "t":
             self.cheat_codes_actived["triple_points"] = not self.cheat_codes_actived["triple_points"]
 
-    def key_release(self,event)->None:
+    def key_release(self, event) -> None:
         try:
             if event.keysym == self.bindedJump:
                 self.p1.stopJump()
