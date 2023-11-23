@@ -1,7 +1,6 @@
-#####################
+################################
 # SCREEN RESOLUTION : 1366 x 768
-#####################
-
+###############################
 from tkinter import CENTER, Tk, Canvas, Button, RAISED, PhotoImage, NW, Entry, CENTER, Label
 from random import randint
 import Bosskey_Handler as Bk
@@ -33,7 +32,8 @@ class Game_State_Manger:
 
         # misc variable
         # Cheat Codes are "double points", "baby steps"(not ready), "pew pew"(definetley not ready)
-        self.cheat_codes = ["triple_points"]
+        self.super_jump_keys = {"o":False,"p":False}
+        self.cheat_codes = ["triple_points","super_jump"]
         self.cheat_codes_actived = {s: False for s in self.cheat_codes}
 
         self.bindedJump = "space"                                       # global Jump
@@ -44,8 +44,8 @@ class Game_State_Manger:
         self.gameRunning = True
         self.entry_focused = False
         self.score = 0                                               # score for current run
-        self.starting_scroll_speed = 9
-        self.player_size = 15
+        self.starting_scroll_speed = 6
+        self.player_size = 25
 
         # hold boss key window instance
         self.bossKeyWindow = None
@@ -127,7 +127,6 @@ class Game_State_Manger:
         
         self.root.focus_set()
         player_details_arr = False
-
         for p in read_saves_binary_file():
             if p["player_name"] == self.PlayerName:
                 player_details_arr = list(p.values())
@@ -154,7 +153,7 @@ class Game_State_Manger:
                 [1366, 0],
                 [0, 0],
                 [1366, 0],
-                self.starting_scroll_speed,[[self.start_bird_pos+1000*i,randint(400,600),2,"bird "+str(i)]for i in range(self.num_of_birds)] 
+                self.starting_scroll_speed,[[self.start_bird_pos+1000*i,randint(400,600),self.bird_speed,"bird "+str(i)]for i in range(self.num_of_birds)] 
                 # x:int,y:int,scrollSpeed:int,filepath:str,tag_id:str,canvas:Canvas
                 # what we save: x, y, scrollSpeed,tag
             ]
@@ -162,9 +161,9 @@ class Game_State_Manger:
         self.clearCanvas()
         self.gameSpawned = True
         self.background_upper1 = GameBackground(
-            player_details_arr[7][0], player_details_arr[7][1], "gameassets/back-clouds.png", "background_upper1", self.canvas, 2)
+            player_details_arr[7][0], player_details_arr[7][1], "gameassets/back-clouds.png", "background_upper1", self.canvas, 3)
         self.background_upper2 = GameBackground(
-            player_details_arr[8][0], player_details_arr[8][1], "gameassets/back-clouds.png", "background_upper2", self.canvas, 2)
+            player_details_arr[8][0], player_details_arr[8][1], "gameassets/back-clouds.png", "background_upper2", self.canvas, 3)
 
         self.background1 = GameBackground(
             player_details_arr[5][0], player_details_arr[5][1], "gameassets/starry-night.png", "background1", self.canvas, 1)
@@ -198,7 +197,7 @@ class Game_State_Manger:
         self.birds_array = [Crow(player_details_arr[10][i][0],
                             player_details_arr[10][i][1],
                             player_details_arr[10][i][2],
-                            f"GameTests/crow-size-32/crow-size-32-{str(1)}.png", 
+                            f"gameassets/crows-64/crow-size-64-{str(1)}.png", 
                             player_details_arr[10][i][3],
                             self.canvas) for i in range(len(player_details_arr[10]))]
 
@@ -374,10 +373,7 @@ class Game_State_Manger:
 
 
     def inGameMenuPause(self)->None:
-   
-
         self.pause = True
-
         PauseResume = Button(self.root, text="resume", font=("Nimbus Mono PS", 12), bg="black", fg="white",
                             bd=3, relief=RAISED, padx=10, pady=5, width=16, height=2, command=self.resumeGame)
 
@@ -432,7 +428,7 @@ class Game_State_Manger:
 
     def resumeGame(self)->None:
         
-        pause = False
+        self.pause = False
         arr = [self.btnPauseResume,  self.btnPauseCheats, self.btnPauseExit]
         for i in range(len(arr)):
             arr[i].destroy()
@@ -488,7 +484,6 @@ class Game_State_Manger:
     def gameLoop(self)->None:
        
         if self.gameRunning and not self.pause:
-
             self.set_score(self.score+(3 if self.cheat_codes_actived["triple_points"] else 1))
             again = self.p1.updatePlayer(self.allPlatforms, self.restartGame)
             if again:
@@ -501,7 +496,7 @@ class Game_State_Manger:
                     again2=b.update_crow([self.p1.x,self.p1.y,self.p1.x+self.p1.size,self.p1.y+self.p1.size],self.restartGame)
                     if not again2:
                         break
-                    
+    
                 lastPlatForm = self.platform1
                 for p in self.allPlatforms:
                     if p.getPlatformX() > lastPlatForm.getPlatformX():
@@ -510,26 +505,23 @@ class Game_State_Manger:
                     platform.updatePlatform(heightOfLastPlatform=lastPlatForm.getPlatformHeight(
                 ), xOfLastPlatform=lastPlatForm.getPlatformX(), maxPlayerJumpHeight=maxJumpHeight)
                     platform.changeScrollSpeed(self.starting_scroll_speed, self.score)
-            
             if again and again2:
                 self.game_loop_id = self.root.after(20, self.gameLoop)
 
 
     def restartGame(self)->None:
         def count_down_display(n:int)->None:
-            
-            count = PhotoImage(file="gameassets/count-down"+str(n)+".png")
+            self.count = PhotoImage(file="gameassets/count-down"+str(n)+".png")
             countdown_label_id = self.canvas.create_image(self.width//2, self.height//2,
-                                                    anchor=CENTER, image=count)
+                                                    anchor=CENTER, image=self.count)
             self.root.after(800, lambda:delete_countdown_label(countdown_label_id))
-
         def delete_countdown_label(id:int)->None:
             self.canvas.delete(id)
 
         if self.game_loop_id:
 
             self.gameRunning = True
-            self.update_Leaderboard(self.PlayerName, self.score)
+            update_Leaderboard(self.PlayerName, self.score)
 
             self.p1.resetPosition()
             self.platform1.resetPos(0, 500)
@@ -545,6 +537,7 @@ class Game_State_Manger:
             else:
                 self.platform3.resetPos(
                     2000, min(700, self.platform2.getPlatformHeight()+int(self.platform_offset())))
+                
             self.set_score(0)
 
             for bird in range(len(self.birds_array)):
@@ -567,13 +560,42 @@ class Game_State_Manger:
             if event.keysym == self.bindedJump:
                 self.p1.jump()
 
-        except:
-            pass
+        except:pass
         if event.keysym == "b" and self.root.focus_get() != self.entry:
             Bk.bossKeyCreate()
 
-        if event.keysym == "t":
+        if event.keysym == "t" and self.root.focus_get() != self.entry:
             self.cheat_codes_actived["triple_points"] = not self.cheat_codes_actived["triple_points"]
+
+        if event.keysym == "o" and self.root.focus_get() != self.entry:
+            self.super_jump_keys["o"]=True
+            self.cheat_codes_actived["super_jump"]=self.super_jump_keys["o"] and self.super_jump_keys["p"]
+            if self.cheat_codes_actived["super_jump"]:
+                try:
+                    self.p1.jumpForce = -27
+                except:pass
+        
+        if event.keysym == "p" and self.root.focus_get() != self.entry:
+            self.super_jump_keys["p"]=True
+            self.cheat_codes_actived["super_jump"]=self.super_jump_keys["o"] and self.super_jump_keys["p"]
+            if self.cheat_codes_actived["super_jump"]:
+                try:
+                    self.p1.jumpForce = -27
+                except:pass
+
+        
+            '''
+            
+            try:
+
+                if self.p1.jumpForce == -15:
+                    self.p1.jumpForce = -27
+                else:
+                    self.p1.jumpForce = -15
+            except:
+                print("no no")
+                pass
+            '''
 
     def key_release(self,event)->None:
         try:
@@ -581,6 +603,20 @@ class Game_State_Manger:
                 self.p1.stopJump()
         except:
             pass
+        if event.keysym == "o" and self.root.focus_get() != self.entry:
+            self.super_jump_keys["o"]=False
+            self.cheat_codes_actived["super_jump"]=False
+            try:
+                    self.p1.jumpForce = -17
+            except:pass
+        
+        if event.keysym == "p" and self.root.focus_get() != self.entry:
+            self.super_jump_keys["p"]=False
+            self.cheat_codes_actived["super_jump"]=False
+            try:
+                    self.p1.jumpForce = -17
+            except:pass
+
 
 Game=Game_State_Manger()
     

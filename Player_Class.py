@@ -1,6 +1,9 @@
+from tkinter import Canvas,NW,PhotoImage
+from random import randint
+
 class Player:
 
-    def __init__(self,x,y,size,GameCanvas):
+    def __init__(self,x:int,y:int,size:int,GameCanvas:Canvas):
         """PROCEDURE, instatiating player square properties
         Args:
             x (int): player position on x axis
@@ -15,17 +18,29 @@ class Player:
         self.y = y
         self.canvas = GameCanvas
         # player id on canvas 
-        self.playerInt = self.canvas.create_rectangle(x,y,size+x,y+size,fill="green")
+        #self.playerInt = self.canvas.create_rectangle(x,y,size+x,y+size,outline="green")
         # values related to movement
         self.vel = 0
         self.consecJumpFrames = 0
         self.maxConseqFrames=5
-        self.gravity = 2
-        self.jumpForce = -22
+        self.gravity = 1.5
+        self.jumpForce = -17
         self.onGround = True
         self.holdingJump=False
         self.jumpAvailable = False
         self.floor = self.y
+        # animations
+        self.run_frame = 0 # frames range from 0 to 7
+        self.jump_frame = 2 # frames range from 0 to 2
+        self.land_frame = 0 #frames range from 0 to 8
+        self.image = PhotoImage(f"gameassets/player-jump/tile00{self.jump_frame}.png")
+        self.diff = int((48 - self.size)//2)
+        #self.image_object = self.canvas.create_image(x,y,anchor = NW, image = self.image,tags="player")
+        self.image_object = self.canvas.create_image(self.x-self.diff,self.y-self.diff,anchor = NW, image = self.image,tags="player")
+        self.canvas.tag_raise("player")
+        self.landing = True
+        self.still_animating_jump = True
+        self.run_count = 0
         
     def updatePlayer(self,platforms:list,gameRestart):
         self.setNewFloor(platforms)
@@ -59,19 +74,85 @@ class Player:
         elif self.y + self.size == self.floor:
             self.consecJumpFrames=0
         elif self.y+self.size>700:
-            gameRestart()  
+            self.reset_frames() 
+            gameRestart()
             return False 
         # if player below the floor
         else:
+            self.reset_frames() 
             gameRestart() 
             return False
-
+        self.animate()
         return True
-            
+    
+    def animate(self):
+        pass
+        #if not on the ground use jump animations
+            # if jump_frame != 2 then (jump_frame = jump_frame + 1 AND landing = True AND self.run_frame = 0 AND self.land_frame = 0)
+        # else if player on ground
+            # if player landing and land_frame<9 THEN load land_frame THEN land_frame+=1
+            # else player landing = False THEN load player running THEN run_frame += 1 if run_frame<7 else run_frame = 0
+
+        #if not on the ground use jump animations
+        if not self.onGround:
+            # if jump_frame != 2 then (jump_frame = jump_frame + 1 AND landing = True AND self.run_frame = 0 AND self.land_frame = 0)
+            if self.jump_frame<2:
+                '''
+                self.image.config(file=f_path)
+                
+                self.canvas.itemconfig(self.image_object, image=self.image)
+                '''
+                self.image.config(file=f"gameassets/player-jump/tile00{self.jump_frame}.png")
+                self.canvas.itemconfig(self.image_object, image=self.image)
+                self.jump_frame+=1
+                self.run_frame = 0
+                self.land_frame = 0
+                self.landing = True
+                self.run_count = 0
+            elif self.still_animating_jump:
+                self.still_animating_jump=False
+                self.image.config(file="gameassets/player-jump/tile002.png")
+                self.canvas.itemconfig(self.image_object, image=self.image)
+
+        # else if player on ground
+        else:
+            # if player landing and land_frame<9 THEN load land_frame THEN land_frame+=1 AND jump_frame = 0
+            if self.landing and self.land_frame<9:
+                self.image.config(file=f"gameassets/player-land/tile00{self.land_frame}.png")
+                self.canvas.itemconfig(self.image_object, image=self.image)
+                self.land_frame+=1
+                self.jump_frame=0
+
+            # else player landing = False THEN load player running THEN if run_count==4 THEN(run_frame += 1 if run_frame<7 else run_frame = 0) 
+                                                                        # else run_count+=1
+            else:
+                self.landing=False
+                self.image.config(file=f"gameassets/player-run/tile00{self.run_frame}.png")
+                self.canvas.itemconfig(self.image_object, image=self.image)
+                if self.run_count==4:
+                    self.run_frame = self.run_frame+1 if self.run_frame<7 else 0
+                    self.run_count = 0
+                else:
+                    self.run_count +=1
+                
+
+
+    def reset_frames(self):
+        self.run_frame = 0  # frames range from 0 to 7
+        self.jump_frame = 2  # frames range from 0 to 2
+        self.land_frame = 0  # frames range from 0 to 8
+        self.image = PhotoImage(file="gameassets/player-jump/tile002.png")
+        self.diff = int((48 - self.size) // 2)
+        self.canvas.itemconfig(self.image_object, image=self.image)
+        self.landing = True
+        self.still_animating_jump = True
+        self.run_count = 0
     def movePlayer(self,dx:int,dy:int):
-        self.canvas.move(self.playerInt,dx,dy)
+        #self.canvas.move(self.playerInt,dx,dy)
         self.y += dy
         self.x += dx
+        #def move_image(self,dx:int,dy:int):
+        self.canvas.move(self.image_object,dx,dy)
 
     def setNewFloor(self,platforms:list):
         value = False
@@ -121,7 +202,13 @@ class Player:
 
     def resetPosition(self):
 
-        self.canvas.coords(self.playerInt,200,400,200+self.size,400+self.size)
+        #self.canvas.coords(self.playerInt,200,400,200+self.size,400+self.size)
         self.x = 200
         self.y = 400
         self.vel = 0
+        self.reset_image()
+        self.reset_frames()
+
+    def reset_image(self):
+        self.canvas.coords(self.image_object,self.x-self.diff,self.y-self.diff)
+        

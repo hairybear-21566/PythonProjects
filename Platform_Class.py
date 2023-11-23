@@ -13,6 +13,7 @@ class Platforms:
         self.initialY = y
         self.x = x
         self.y = y
+        self.initial_scroll_speed = scrollSpeed
         self.scrollSpeed = scrollSpeed
         # Create the platform with the class attribute width
         self.platformInt = GameCanvas.create_rectangle(x, y, x + Platforms.width, Platforms.screen_height, fill="black")
@@ -48,9 +49,10 @@ class Platforms:
         return self.x
     
     def resetScrollSpeed(self):
-        self.scrollSpeed = 10
+        self.scrollSpeed = self.initial_scroll_speed
 
     def resetPos(self,x:int,y:int):
         self.GameCanvas.coords(self.platformInt,x,y,x+self.width,768)
         self.x = x
         self.y = y
+        self.resetScrollSpeed()
