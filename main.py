@@ -12,6 +12,9 @@ from Leaderboard_Handler import update_Leaderboard, read_leaderboard_binary_file
 from Crow_Class import Crow
 from typing import Union  # Union[int,float] <- allows for multiple type hints
 
+# for commiting everything:
+# git add --all --include-unmodified
+
 
 class Game_State_Manger:
     # Creating application window
