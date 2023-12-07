@@ -260,7 +260,9 @@ class Races:#(s)
             double_count += 1 if mult==2 else 0
             outcome = race[5:].split("-")
             points_added = 1
+            
             for place in outcome:
+                
                 if place[2:4] != "xx":
                     points = points_added * mult
                     country_results[int(place[0:2]) -
@@ -273,6 +275,10 @@ class Races:#(s)
                     max_double[int(place[0:2])-1] = max(max_double[int(place[0:2])-1], points )
                 else:
                     max_single[int(place[0:2])-1] = max(max_single[int(place[0:2])-1], points )
+            #print(country_results[4][2])
+        
+        #print("max double of country 5 boat 6: ",max_double[4])
+        #print("max_single of country 5 boat 6: ",max_single[4])
 
         if single_count > 2:
             
@@ -345,16 +351,11 @@ class Races:#(s)
         pass#(s)
 
 
-if __name__ == '__main__':  # (s)
+if __name__ == '__main__':#(s)
     # You can place any ad-hoc testing here
     # e.g. my_instance = Races()
     # e.g. section_1 = my_instance.read_results()
     # e.g. print(section_1)
-
-    Race = Races()
-
-    for i in range(1,11):
-        print(f"{Race.class_table_discard_result(i,Race.read_results())}")
 
 
     
